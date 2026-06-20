@@ -1,0 +1,27 @@
+# === macOS / OS junk ===
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+Thumbs.db
+Desktop.ini
+
+# === Editor / IDE ===
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# === Node (เผื่อเผลอรัน npm ในโฟลเดอร์นี้ — แอป Next จริงอยู่ workspaces/presales-quotation) ===
+node_modules/
+npm-debug.log*
+.next/
+
+# === Secrets / env ===
+.env
+.env.*
+
+# === ถ้าจะทำเป็น public repo ค่อยเปิดคอมเมนต์ 2 บรรทัดนี้ (ซ่อนข้อมูล/ราคาลูกค้า) ===
+# input/
+# output/
