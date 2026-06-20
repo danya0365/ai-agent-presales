@@ -158,8 +158,21 @@ presales/                        ← data เท่านั้น
      groupLegend, timeline{teamAssumption,elapsedNote,stacks[],verdict}, phasing, assumptions[], risks[], openQuestions[], outOfPrice[]`
    - `output.html` — ใบเสนอ standalone ที่ **โครงต้องตรงกับ [templates/document-spec.md](templates/document-spec.md) เป๊ะ** (section 1–9 เรียงเหมือน React + สารบัญ sticky + scroll-spy) — **ห้าม improvise โครง/เนื้อหา ทุกอย่างมาจาก data.json**
    - ฟิลด์ `source` ต้อง = `"input/<project-slug>"` เพื่อกันการทำซ้ำ
-6. หน้าเว็บ `/project/<uuid>` ใช้ได้ทันที — route เป็น generic อ่าน data.json อัตโนมัติ **ไม่ต้องแก้โค้ด Next ต่อโปรเจกต์**
-7. **หยุดและรายงานพี่**: ชื่อโปรเจกต์, uuid, ช่วงราคา, path ไฟล์, และ URL `/project/<uuid>` — ไม่ไปทำตัวถัดไปเอง
+6. 🚀 **Sync + deploy ขึ้น Next.js/Vercel (บังคับ — ห้ามข้าม):**
+   route เป็น generic → **ไม่ต้องแก้โค้ด Next "ต่อโปรเจกต์"** จริง แต่ **"ต้อง" sync data เข้าแอป + push
+   ให้ Vercel เห็น** ไม่งั้นเว็บจริง (`presales-quotation.vercel.app`) จะไม่เห็นโปรเจกต์ใหม่
+   เพราะ Vercel อ่านจาก snapshot `data/` ในแอป ไม่ได้อ่าน `presales/output` สด
+   ```
+   cd /Users/marosdeeuma/ai-project/workspaces/presales-quotation
+   npm run sync:data        # ก๊อป data.json ทุกใบ presales/output → ./data (snapshot ที่ Vercel ใช้)
+   npm run build            # ต้องผ่านก่อน
+   git add -A && git commit -m "Add quotation: <projectName>" && git push   # Vercel auto-redeploy
+   ```
+   - **ทำทุกครั้งที่สร้าง/แก้ใบประเมิน** · ข้อมูลขึ้นเว็บ public (พี่ยอมรับแล้ว)
+   - ถ้า build ไม่ผ่าน หรือ schema มีฟิลด์ใหม่ที่หน้ายัง render ไม่ครบ → แก้ `ProjectView.tsx`/`output.html`
+     ให้ตรง [templates/document-spec.md](templates/document-spec.md) ก่อน (นี่คือกรณีเดียวที่ต้อง "แก้โค้ด Next")
+7. **หยุดและรายงานพี่**: ชื่อโปรเจกต์, uuid, ช่วงราคา, path ไฟล์, และ **URL จริงบน Vercel**
+   `https://presales-quotation.vercel.app/project/<uuid>` (ลูกค้า) + `…/project/<uuid>/internal` (ทีม) — ไม่ไปทำตัวถัดไปเอง
 
 **ข้อควรระวังด้านเทคนิค (Next.js 16.2.9 — มี breaking changes):**
 - แอปอยู่ที่ `/Users/marosdeeuma/ai-project/workspaces/presales-quotation/` (ไม่ใช่ใน presales แล้ว)
@@ -167,3 +180,5 @@ presales/                        ← data เท่านั้น
 - `params` ในหน้าเป็น `Promise` → ต้อง `await params`
 - หน้าที่อ่านไฟล์ (Server Component) ใส่ `export const dynamic = "force-dynamic"`
 - รัน/ตรวจ: `cd /Users/marosdeeuma/ai-project/workspaces/presales-quotation && npm run build` (ต้องผ่าน) แล้ว `npm run start` เปิด `/project`
+- **`npm run sync:data` = สะพานเชื่อม** `presales/output/*/data.json` (ของจริง local) → `data/` (snapshot ที่ Vercel/production อ่าน) · ต้องรัน + push ทุกครั้งหลังสร้าง/แก้ใบประเมิน ไม่งั้น Vercel ไม่อัปเดต
+- local dev (`npm run dev`) อ่าน `presales/output` สดอยู่แล้ว — แต่ **Vercel ไม่ใช่** ต้อง sync:data เสมอ
