@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ระบบคูปอง (Coupon System) — เอกสารวิเคราะห์ระบบ & ใบประเมินค่าใช้จ่าย</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&family=Noto+Sans+Thai:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#F4F1EA;
+    --bg2:#EAE6DA;
+    --card:#FBFAF6;
+    --ink:#2D3A3A;
+    --ink-soft:#5C6A68;
+    --teal:#3E7C76;
+    --teal-dark:#2F605B;
+    --amber:#C98A3B;
+    --amber-soft:#F0E2CC;
+    --line:#DED8C8;
+    --green:#4F7A52;
+    --green-bg:#E5EEE2;
+    --yellow-bg:#F6ECCF;
+    --red:#A8543F;
+    --red-bg:#F2E0D8;
+    --shadow:0 4px 14px rgba(45,58,58,.08);
+    --shadow-lg:0 10px 30px rgba(45,58,58,.12);
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;font-family:'Sarabun','Noto Sans Thai',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+    background:var(--bg);color:var(--ink);line-height:1.65;font-size:16px;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:1040px;margin:0 auto;padding:0 20px 80px;}
+
+  /* ---------- Header ---------- */
+  header.hero{
+    background:linear-gradient(135deg,var(--teal-dark),var(--teal));
+    color:#F4F1EA;padding:48px 20px 40px;text-align:center;
+    border-bottom:6px solid var(--amber);
+  }
+  header.hero .kicker{
+    display:inline-block;letter-spacing:2px;font-size:.8rem;text-transform:uppercase;
+    background:rgba(255,255,255,.15);padding:5px 14px;border-radius:20px;margin-bottom:14px;
+  }
+  header.hero h1{margin:0 0 8px;font-size:2rem;font-weight:700;letter-spacing:.5px;}
+  header.hero p{margin:4px 0;opacity:.92;font-size:1.02rem;}
+  .meta-row{
+    display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin-top:20px;
+  }
+  .meta-row span{
+    background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.25);
+    padding:6px 14px;border-radius:8px;font-size:.85rem;
+  }
+
+  /* ---------- TOC: sticky / pin ---------- */
+  nav.toc{
+    position:sticky;top:0;z-index:50;
+    background:rgba(251,250,246,.95);backdrop-filter:blur(6px);
+    border-bottom:1px solid var(--line);box-shadow:var(--shadow);
+  }
+  nav.toc .toc-inner{
+    max-width:1040px;margin:0 auto;padding:10px 20px;
+    display:flex;align-items:center;gap:6px;overflow-x:auto;white-space:nowrap;
+    -ms-overflow-style:none;scrollbar-width:none;
+  }
+  nav.toc .toc-inner::-webkit-scrollbar{display:none;}
+  nav.toc strong{color:var(--teal-dark);font-size:.78rem;text-transform:uppercase;letter-spacing:1px;flex:0 0 auto;margin-right:6px;}
+  nav.toc a{flex:0 0 auto;color:var(--ink);text-decoration:none;font-size:.9rem;font-weight:500;padding:4px 12px;border-radius:20px;transition:background .15s,color .15s;}
+  nav.toc a:hover{background:var(--bg2);}
+  nav.toc a.active{background:var(--teal);color:#fff;}
+
+  /* ---------- Back to top ---------- */
+  #toTop{
+    position:fixed;bottom:24px;right:24px;z-index:60;display:none;
+    width:44px;height:44px;border:none;border-radius:50%;cursor:pointer;
+    background:var(--teal-dark);color:#fff;font-size:1.2rem;box-shadow:var(--shadow-lg);
+  }
+  #toTop:hover{background:var(--teal);}
+  #toTop.show{display:block;}
+
+  /* ---------- Sections ---------- */
+  section{
+    background:var(--card);border:1px solid var(--line);border-radius:16px;
+    padding:30px 32px;margin-bottom:28px;box-shadow:var(--shadow);scroll-margin-top:64px;
+  }
+  .sec-num{
+    display:inline-flex;align-items:center;justify-content:center;
+    width:38px;height:38px;border-radius:10px;background:var(--teal);color:#fff;
+    font-weight:700;font-size:1.05rem;margin-right:12px;flex:0 0 auto;
+  }
+  h2.sec-title{display:flex;align-items:center;font-size:1.5rem;margin:0 0 6px;color:var(--teal-dark);font-weight:700;}
+  .sec-sub{color:var(--ink-soft);margin:0 0 22px 50px;font-size:.98rem;}
+  h3{color:var(--teal-dark);font-size:1.15rem;margin:26px 0 12px;border-left:4px solid var(--amber);padding-left:12px;}
+  h4{color:var(--ink);font-size:1.02rem;margin:18px 0 8px;}
+  p{margin:8px 0;}
+  ul{margin:8px 0 8px;padding-left:22px;}
+  li{margin:5px 0;}
+
+  /* ---------- Tables ---------- */
+  .tbl-wrap{overflow-x:auto;margin:14px 0;}
+  table{width:100%;border-collapse:collapse;font-size:.95rem;background:#fff;border-radius:10px;overflow:hidden;}
+  thead th{background:var(--teal-dark);color:#fff;text-align:left;padding:11px 14px;font-weight:600;font-size:.92rem;}
+  tbody td{padding:10px 14px;border-bottom:1px solid var(--line);vertical-align:top;}
+  tbody tr:nth-child(even){background:#F7F4EC;}
+  tbody tr:hover{background:var(--amber-soft);}
+  td.num,th.num{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap;}
+  tr.total td{background:var(--bg2)!important;font-weight:700;color:var(--teal-dark);border-top:2px solid var(--teal);}
+  tr.grand td{background:var(--teal);color:#fff;font-weight:700;font-size:1rem;}
+
+  /* ---------- Badges / pills ---------- */
+  .badge{display:inline-block;padding:2px 10px;border-radius:20px;font-size:.78rem;font-weight:600;white-space:nowrap;}
+  .b-low{background:var(--green-bg);color:var(--green);}
+  .b-mid{background:var(--yellow-bg);color:var(--amber);}
+  .b-high{background:var(--red-bg);color:var(--red);}
+  .grp{display:inline-block;width:24px;height:24px;line-height:24px;text-align:center;border-radius:6px;background:var(--amber);color:#fff;font-weight:700;font-size:.85rem;}
+
+  /* ---------- Scope columns ---------- */
+  .two-col{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin:14px 0;}
+  .scope-box{border-radius:12px;padding:16px 18px;border:1px solid var(--line);}
+  .scope-in{background:var(--green-bg);border-color:#bcd3b8;}
+  .scope-out{background:var(--red-bg);border-color:#e3c4b8;}
+  .scope-box h4{margin-top:0;}
+  .scope-in h4{color:var(--green);}
+  .scope-out h4{color:var(--red);}
+
+  /* ---------- Use case cards ---------- */
+  .uc-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:14px 0;}
+  .uc-card{background:#fff;border:1px solid var(--line);border-radius:12px;padding:16px;}
+  .uc-card .uc-title{font-weight:600;color:var(--teal-dark);}
+  .uc-card .uc-actor{font-size:.78rem;color:var(--amber);font-weight:600;margin-top:2px;}
+  .uc-card .uc-desc{font-size:.9rem;color:var(--ink-soft);margin-top:6px;}
+
+  /* ---------- Callout ---------- */
+  .callout{border-radius:12px;padding:16px 20px;margin:18px 0;border-left:5px solid var(--amber);background:var(--yellow-bg);}
+  .callout.tip{border-left-color:var(--teal);background:var(--green-bg);}
+  .callout strong{color:var(--teal-dark);}
+
+  /* ---------- Price hero ---------- */
+  .price-hero{
+    background:linear-gradient(135deg,var(--amber),#B5762E);color:#fff;
+    border-radius:16px;padding:26px 28px;margin:22px 0 28px;text-align:center;box-shadow:var(--shadow-lg);
+  }
+  .price-hero .lbl{font-size:.95rem;opacity:.9;letter-spacing:1px;text-transform:uppercase;}
+  .price-hero .big{font-size:2.1rem;font-weight:700;margin:6px 0;}
+  .price-hero .sub{font-size:.9rem;opacity:.9;}
+
+  /* ---------- Stat cards ---------- */
+  .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:14px;margin:18px 0;}
+  .stat{background:#fff;border:1px solid var(--line);border-radius:12px;padding:16px;text-align:center;}
+  .stat .v{font-size:1.5rem;font-weight:700;color:var(--teal);}
+  .stat .k{font-size:.85rem;color:var(--ink-soft);margin-top:2px;}
+
+  /* ---------- Stack compare ---------- */
+  .stack-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin:16px 0;}
+  .stack-card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:20px;border-top:5px solid var(--teal);}
+  .stack-card.laravel{border-top-color:var(--amber);}
+  .stack-card h4{margin-top:0;font-size:1.2rem;}
+  .stack-card .tname{color:var(--teal-dark);}
+  .stack-card.laravel .tname{color:var(--amber);}
+  .pros li::marker{content:"✓  ";color:var(--green);font-weight:700;}
+  .cons li::marker{content:"–  ";color:var(--red);font-weight:700;}
+
+  footer{text-align:center;color:var(--ink-soft);font-size:.88rem;margin-top:40px;padding-top:20px;border-top:1px solid var(--line);}
+  .sig{font-weight:600;color:var(--teal-dark);}
+
+  @media(max-width:720px){
+    .two-col,.stack-grid,.uc-grid{grid-template-columns:1fr;}
+    header.hero h1{font-size:1.5rem;}
+    section{padding:22px 18px;}
+    .sec-sub{margin-left:0;}
+  }
+  @media print{
+    body{background:#fff;font-size:12px;}
+    nav.toc,#toTop{display:none;}
+    section{box-shadow:none;border:1px solid #ccc;break-inside:avoid;}
+    header.hero{background:var(--teal-dark)!important;-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+    thead th,tr.grand td,.price-hero{-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+  }
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <span class="kicker">Presales · Solution Analysis</span>
+  <h1>ระบบคูปอง (Coupon System) — Multi-tenant SaaS</h1>
+  <p>ระบบคูปองหน้าร้านหลายร้านบนแพลตฟอร์มเดียว · คิดค่าบริการรายวันด้วย PromptPay</p>
+  <div class="meta-row">
+    <span>📅 วันที่: 2026-06-20</span>
+    <span>✍️ จัดทำโดย: เคาะดีญะฮ์ (Presales / Solution Architect)</span>
+    <span>📄 เวอร์ชัน: v0.1 (draft)</span>
+  </div>
+</header>
+
+<!-- สารบัญ sticky/pin + scroll-spy -->
+<nav class="toc">
+  <div class="toc-inner">
+    <strong>สารบัญ</strong>
+    <a href="#overview">1. ภาพรวม</a>
+    <a href="#scope">2. ขอบเขตงาน</a>
+    <a href="#actors">3. ผู้ใช้ &amp; บทบาท</a>
+    <a href="#usecases">4. Use Case</a>
+    <a href="#modules">5. โมดูล &amp; man-day</a>
+    <a href="#nonfunc">6. Non-functional</a>
+    <a href="#timeline">7. Timeline &amp; Stack</a>
+    <a href="#cost">8. ค่าใช้จ่าย &amp; ราคา</a>
+    <a href="#notes">9. สมมติฐาน &amp; ความเสี่ยง</a>
+  </div>
+</nav>
+
+<div class="wrap">
+
+<!-- Price hero -->
+<div class="price-hero">
+  <div class="lbl">ช่วงราคารวมทั้งโครงการ (ก่อน VAT)</div>
+  <div class="big">≈ 340,000 – 1,784,000 บาท</div>
+  <div class="sub">ระบบคูปองหน้าร้าน multi-tenant + คิดค่าบริการรายวัน PromptPay · ขึ้นกับระดับเรต (Junior–Expert)</div>
+</div>
+
+<!-- ================= SECTION 1 ================= -->
+<section id="overview">
+  <h2 class="sec-title"><span class="sec-num">1</span> ภาพรวม &amp; เป้าหมายธุรกิจ</h2>
+  <p class="sec-sub">แพลตฟอร์มคูปองหน้าร้านแบบหลายร้าน (SaaS) — ลูกค้าสแกนแล้วใช้ ร้านจ่ายค่าบริการรายวัน</p>
+  <p>แพลตฟอร์มคูปองแบบ multi-tenant (SaaS) ที่ให้ร้านค้าหลายร้านเปิดใช้บนระบบเดียว แต่ละร้านสร้างคูปองส่วนลด/โปรโมชัน
+  และคูปองแลกของรางวัลของตัวเองได้ ลูกค้าหน้าร้านสแกน QR เพื่อรับ/ดูคูปองของตัวเอง (ผูกกับเครื่อง ไม่ต้อง login)
+  แล้ว redeem ที่หน้าร้าน เจ้าของแพลตฟอร์มคิดค่าบริการรายวันต่อร้าน ชำระผ่าน PromptPay</p>
+  <ul>
+    <li><strong>ปัญหาที่แก้:</strong> ให้ร้านค้าทำแคมเปญคูปอง/ของรางวัลหน้าร้านได้เองโดยไม่ต้องมีระบบสมาชิกซับซ้อน ลูกค้าเข้าถึงคูปองง่าย (สแกนแล้วใช้) และเจ้าของแพลตฟอร์มมีรายได้แบบ subscription รายวันจากหลายร้าน</li>
+    <li><strong>ตัววัดความสำเร็จ:</strong> จำนวนร้านที่ active, จำนวนคูปองที่ออก/ถูกใช้ (redemption rate), ยอดของรางวัลที่แลก, รายได้ค่าบริการรายวันรวม, อัตราร้านที่ต่ออายุ</li>
+  </ul>
+  <div class="stats">
+    <div class="stat"><div class="v">136–223</div><div class="k">man-day รวม</div></div>
+    <div class="stat"><div class="v">10</div><div class="k">โมดูลพัฒนา</div></div>
+    <div class="stat"><div class="v">20%</div><div class="k">Contingency</div></div>
+    <div class="stat"><div class="v">4 ระดับ</div><div class="k">เรตที่ใช้</div></div>
+  </div>
+</section>
+
+<!-- ================= SECTION 2 ================= -->
+<section id="scope">
+  <h2 class="sec-title"><span class="sec-num">2</span> ขอบเขตงาน (Scope)</h2>
+  <p class="sec-sub">แยก in/out ให้ชัด — กันงานบานปลายและความเข้าใจผิดเรื่องราคา</p>
+  <div class="two-col">
+    <div class="scope-box scope-in">
+      <h4>✅ อยู่ในขอบเขต</h4>
+      <ul>
+        <li>ระบบ multi-tenant: สมัคร/เปิด-ปิดร้าน, แยกข้อมูลแต่ละร้าน (tenant isolation)</li>
+        <li>Auth &amp; สิทธิ์ฝั่งร้าน (เจ้าของร้าน / พนักงาน)</li>
+        <li>จัดการคูปองส่วนลด/โปรโมชัน (%, จำนวนเงิน, ซื้อ 1 แถม 1, เงื่อนไข, วันหมดอายุ, จำกัดจำนวน)</li>
+        <li>คูปองแลกของรางวัล + คลังของรางวัล/สต็อก</li>
+        <li>QR generation + device-bound session ฝั่งลูกค้า (ไม่ต้อง login, ผูกร้าน)</li>
+        <li>Redemption หน้าร้าน (สแกน/ยืนยัน, กันใช้ซ้ำ, log)</li>
+        <li>ระบบคิดค่าบริการรายวันต่อร้าน + รอบบิล + auto-suspend เมื่อค้างชำระ</li>
+        <li>ชำระเงิน PromptPay (สร้าง QR EMVCo + อัปสลิป + แอดมินยืนยัน manual)</li>
+        <li>Dashboard &amp; รายงานฝั่งร้าน + Dashboard ฝั่ง Platform Admin</li>
+      </ul>
+    </div>
+    <div class="scope-box scope-out">
+      <h4>⛔ อยู่นอกขอบเขต</h4>
+      <ul>
+        <li>การ reconcile PromptPay อัตโนมัติ (ต่อ bank API / payment gateway)</li>
+        <li>ระบบสมาชิก/บัญชีลูกค้าแบบเต็ม (login, ผูกเบอร์/อีเมล) — ใช้ device session แทน</li>
+        <li>การใช้/แลกคูปองออนไลน์นอกหน้าร้าน, e-commerce, ตะกร้าสินค้า</li>
+        <li>เชื่อม POS / ERP / CRM / ระบบบัญชีเดิมของร้าน</li>
+        <li>เนื้อหา/รูปคูปองและของรางวัล (ร้านจัดเตรียมเอง)</li>
+        <li>ค่า cloud/hosting/โดเมน, ค่าธรรมเนียมธนาคาร, งานดูแลหลังส่งมอบ (เสนอแยก)</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ================= SECTION 3 ================= -->
+<section id="actors">
+  <h2 class="sec-title"><span class="sec-num">3</span> ผู้ใช้ &amp; บทบาท (Actors)</h2>
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>บทบาท</th><th>ทำอะไรได้</th></tr></thead>
+      <tbody>
+        <tr><td>ลูกค้า / ผู้ถือคูปอง (หน้าร้าน)</td><td>สแกน QR ที่ร้านเพื่อรับ/ดูคูปองของตัวเอง (เก็บ session ในเครื่อง), ใช้คูปองส่วนลด, แลกของรางวัล — เฉพาะร้านนั้น</td></tr>
+        <tr><td>พนักงานร้าน (Staff)</td><td>สแกน/ยืนยันการใช้คูปองหน้าร้าน, ออก QR ให้ลูกค้า, ค้นหาลูกค้าเดิมแล้วผูกกับเครื่องใหม่, ตรวจของรางวัลคงเหลือ</td></tr>
+        <tr><td>เจ้าของร้าน (Merchant)</td><td>สร้าง/จัดการคูปอง &amp; ของรางวัล, ดูรายงานร้าน, ชำระค่าบริการรายวัน, จัดการพนักงาน</td></tr>
+        <tr><td>ผู้ดูแลแพลตฟอร์ม (Platform Admin)</td><td>อนุมัติ/เปิด-ปิดร้าน, ดูบิล &amp; รายได้รวม, ยืนยันการชำระ PromptPay, ดูภาพรวมทุกร้าน</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ================= SECTION 4 ================= -->
+<section id="usecases">
+  <h2 class="sec-title"><span class="sec-num">4</span> Use Case หลัก</h2>
+  <div class="uc-grid">
+    <div class="uc-card"><div class="uc-title">สมัคร &amp; เปิดร้าน (onboarding)</div><div class="uc-actor">เจ้าของร้าน (Merchant)</div><div class="uc-desc">สมัครเปิดร้าน ตั้งโปรไฟล์ร้าน รอแอดมินอนุมัติ แล้วเริ่มสร้างคูปองได้</div></div>
+    <div class="uc-card"><div class="uc-title">สร้างคูปองส่วนลด/โปรโมชัน</div><div class="uc-actor">เจ้าของร้าน (Merchant)</div><div class="uc-desc">กำหนดประเภท (%, จำนวนเงิน, ซื้อ 1 แถม 1), เงื่อนไข, วันหมดอายุ และจำนวนจำกัด</div></div>
+    <div class="uc-card"><div class="uc-title">รับคูปอง &amp; กลับเข้าดูคูปองด้วยการสแกน QR ที่ร้าน</div><div class="uc-actor">ลูกค้า / ผู้ถือคูปอง (หน้าร้าน)</div><div class="uc-desc">สแกน QR ที่ร้าน ระบบออก device-bound session เก็บในเครื่อง ลูกค้าเห็นคูปองของตัวเองในร้านนั้น เปลี่ยนเครื่องให้พนักงานค้นหาลูกค้าเดิมแล้วผูกเครื่องใหม่ คูปองเดิมยังอยู่ครบ</div></div>
+    <div class="uc-card"><div class="uc-title">ใช้คูปอง (redeem) หน้าร้าน</div><div class="uc-actor">พนักงานร้าน (Staff)</div><div class="uc-desc">พนักงานสแกน/ยืนยันคูปองของลูกค้า ระบบตัดสิทธิ์และกันใช้ซ้ำทันที</div></div>
+    <div class="uc-card"><div class="uc-title">แลกของรางวัล</div><div class="uc-actor">ลูกค้า / ผู้ถือคูปอง (หน้าร้าน)</div><div class="uc-desc">เลือกแลกของรางวัลจากคูปองสะสม ระบบตัดสต็อกของรางวัลและบันทึกการแลก</div></div>
+    <div class="uc-card"><div class="uc-title">คิดค่าบริการรายวัน &amp; ชำระ PromptPay</div><div class="uc-actor">เจ้าของร้าน (Merchant)</div><div class="uc-desc">ระบบสะสมค่าบริการรายวัน แสดง QR PromptPay ให้ชำระ ร้านอัปสลิป แอดมินยืนยัน</div></div>
+    <div class="uc-card"><div class="uc-title">จัดการร้าน &amp; ดูรายได้รวม</div><div class="uc-actor">ผู้ดูแลแพลตฟอร์ม (Platform Admin)</div><div class="uc-desc">อนุมัติ/เปิด-ปิดร้าน ดูสถานะค้างชำระ ยืนยันการชำระ และดูภาพรวมรายได้ทุกร้าน</div></div>
+  </div>
+</section>
+
+<!-- ================= SECTION 5 ================= -->
+<section id="modules">
+  <h2 class="sec-title"><span class="sec-num">5</span> โมดูล &amp; ประเมิน man-day</h2>
+  <p class="sec-sub">ฐานของการตีราคา — แตกเป็น 10 โมดูล 4 กลุ่ม · man-day เป็นช่วง low–high</p>
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>กลุ่ม</th><th>รหัส</th><th>โมดูล</th><th>ความซับซ้อน</th><th class="num">md low</th><th class="num">md high</th></tr></thead>
+      <tbody>
+        <tr><td><span class="grp">A</span></td><td>M-01</td><td><strong>จัดการร้านค้า / Tenant &amp; Onboarding</strong><br><span style="font-size:.85rem;color:var(--ink-soft)">สมัครร้าน, โปรไฟล์ร้าน, อนุมัติ, เปิด/ปิดร้าน, สถานะ active/suspended, แยกข้อมูลแต่ละร้าน</span></td><td><span class="badge b-mid">medium-high</span></td><td class="num">8</td><td class="num">14</td></tr>
+        <tr><td><span class="grp">A</span></td><td>M-02</td><td><strong>Auth &amp; สิทธิ์ฝั่งร้าน</strong><br><span style="font-size:.85rem;color:var(--ink-soft)">login เจ้าของร้าน/พนักงาน, role owner/staff, จัดการพนักงานในร้าน</span></td><td><span class="badge b-mid">medium</span></td><td class="num">5</td><td class="num">8</td></tr>
+        <tr><td><span class="grp">B</span></td><td>M-03</td><td><strong>จัดการคูปองส่วนลด / โปรโมชัน</strong><br><span style="font-size:.85rem;color:var(--ink-soft)">สร้าง/แก้คูปอง (%, จำนวนเงิน, ซื้อ 1 แถม 1), เงื่อนไข, วันเริ่ม-หมดอายุ, จำนวนจำกัด/ต่อคน</span></td><td><span class="badge b-high">high</span></td><td class="num">12</td><td class="num">20</td></tr>
+        <tr><td><span class="grp">B</span></td><td>M-04</td><td><strong>คูปองแลกของรางวัล + คลังสต็อก</strong><br><span style="font-size:.85rem;color:var(--ink-soft)">นิยามของรางวัล, จำนวนสต็อก, เงื่อนไขแลก, ตัดสต็อกเมื่อแลก, ประวัติการแลก</span></td><td><span class="badge b-mid">medium-high</span></td><td class="num">8</td><td class="num">13</td></tr>
+        <tr><td><span class="grp">B</span></td><td>M-05</td><td><strong>QR + Device Session + ทะเบียนลูกค้าเบื้องต้น</strong><br><span style="font-size:.85rem;color:var(--ink-soft)">ออก QR ที่ร้าน → device-bound token เก็บใน local ผูกร้าน, ทะเบียนลูกค้าเบื้องต้น (ชื่อ/เบอร์) เก็บฝั่ง server, คูปองผูกกับลูกค้า, เปลี่ยนเครื่อง = พนักงานค้นหาลูกค้าแล้วผูกเครื่องใหม่ (คูปองไม่หาย)</span></td><td><span class="badge b-high">high</span></td><td class="num">11</td><td class="num">17</td></tr>
+        <tr><td><span class="grp">B</span></td><td>M-06</td><td><strong>Redemption หน้าร้าน</strong><br><span style="font-size:.85rem;color:var(--ink-soft)">พนักงานสแกน/ยืนยันการใช้คูปอง, ตรวจสิทธิ์ server-side, กันใช้ซ้ำ (idempotent), log การใช้</span></td><td><span class="badge b-mid">medium-high</span></td><td class="num">7</td><td class="num">12</td></tr>
+        <tr><td><span class="grp">C</span></td><td>M-07</td><td><strong>ระบบคิดค่าบริการรายวัน (Billing)</strong><br><span style="font-size:.85rem;color:var(--ink-soft)">สะสมค่าบริการรายวันต่อร้าน, รอบบิล, ยอดค้างชำระ, auto-suspend/เปิดร้านใหม่เมื่อชำระ, เตือนล่วงหน้า</span></td><td><span class="badge b-high">high</span></td><td class="num">10</td><td class="num">16</td></tr>
+        <tr><td><span class="grp">C</span></td><td>M-08</td><td><strong>ชำระเงิน PromptPay (manual verify)</strong><br><span style="font-size:.85rem;color:var(--ink-soft)">สร้าง QR PromptPay (EMVCo), หน้าแจ้งชำระ/อัปสลิป, แอดมินยืนยันยอด, ประวัติการชำระ</span></td><td><span class="badge b-mid">medium-high</span></td><td class="num">6</td><td class="num">10</td></tr>
+        <tr><td><span class="grp">D</span></td><td>M-09</td><td><strong>Dashboard &amp; รายงานร้านค้า</strong><br><span style="font-size:.85rem;color:var(--ink-soft)">คูปองที่ออก/ถูกใช้, redemption rate, ของรางวัลคงเหลือ, ยอดค่าบริการของร้าน</span></td><td><span class="badge b-mid">medium</span></td><td class="num">6</td><td class="num">10</td></tr>
+        <tr><td><span class="grp">D</span></td><td>M-10</td><td><strong>Dashboard ผู้ดูแลแพลตฟอร์ม</strong><br><span style="font-size:.85rem;color:var(--ink-soft)">รายชื่อร้านทั้งหมด, สถานะ/ค้างชำระ, ยืนยันการชำระ, รายได้รวม, ภาพรวมการใช้งาน</span></td><td><span class="badge b-mid">medium</span></td><td class="num">6</td><td class="num">10</td></tr>
+        <tr class="total"><td colspan="4">รวมงานพัฒนา (Subtotal)</td><td class="num">79</td><td class="num">130</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p style="font-size:.85rem;color:var(--ink-soft)"><strong>A</strong> Platform &amp; Tenant &nbsp; <strong>B</strong> Coupon Engine &nbsp; <strong>C</strong> Billing &amp; Payment &nbsp; <strong>D</strong> Dashboard &amp; Report</p>
+</section>
+
+<!-- ================= SECTION 6 ================= -->
+<section id="nonfunc">
+  <h2 class="sec-title"><span class="sec-num">6</span> ความต้องการ Non-functional</h2>
+  <p class="sec-sub">สิ่งที่ลูกค้ามักไม่พูด แต่กระทบราคามากที่สุด</p>
+  <div class="stats">
+    <div class="stat"><div class="v">Multi-tenant</div><div class="k">แยกข้อมูลแต่ละร้านปลอดภัย (tenant isolation)</div></div>
+    <div class="stat"><div class="v">กันใช้ซ้ำ</div><div class="k">Redemption idempotent + signed token กันปลอม QR</div></div>
+    <div class="stat"><div class="v">Device Session</div><div class="k">Token ผูกเครื่อง ปลอดภัย เปลี่ยนเครื่องต้องสแกนใหม่</div></div>
+    <div class="stat"><div class="v">PromptPay</div><div class="k">QR ถูกต้องตามมาตรฐาน EMVCo</div></div>
+    <div class="stat"><div class="v">PWA/Responsive</div><div class="k">ใช้บนมือถือลื่น ทั้งฝั่งร้านและลูกค้า</div></div>
+    <div class="stat"><div class="v">ภาษาไทย</div><div class="k">UI/รายงานภาษาไทยเป็นหลัก</div></div>
+    <div class="stat"><div class="v">PDPA</div><div class="k">เก็บข้อมูลลูกค้าเท่าที่จำเป็น</div></div>
+    <div class="stat"><div class="v">Backup</div><div class="k">uptime + สำรองข้อมูล (หลายร้านพึ่งพา)</div></div>
+  </div>
+</section>
+
+<!-- ================= SECTION 7 ================= -->
+<section id="timeline">
+  <h2 class="sec-title"><span class="sec-num">7</span> Timeline &amp; เปรียบเทียบ Stack</h2>
+  <p class="sec-sub">ทีม freelance 2–3 คน (full-stack 2 + PM/QA แชร์ · ~2 effective heads)</p>
+  <p>Effort รวม ~134–222 man-day → ระยะเวลาจริงราว 3.5–6 เดือน</p>
+  <div class="stack-grid">
+    <div class="stack-card laravel">
+      <h4 class="tname">▲ Laravel (PHP) + Filament</h4>
+      <p style="font-size:.9rem;color:var(--ink-soft)">⏱ ~3.5–5.5 เดือน</p>
+      <ul class="pros">
+        <li>Admin/CRUD ร้าน + billing + dashboard scaffolding เร็ว (กลุ่ม A/C/D ได้เปรียบ)</li>
+        <li>โตเต็มที่ เหมาะ multi-tenant + รายงาน</li>
+        <li>หา dev ไทยง่าย</li>
+      </ul>
+      <ul class="cons"><li>ส่วน QR/PWA device session ฝั่งลูกค้าต้องทำ frontend เพิ่มเอง</li></ul>
+    </div>
+    <div class="stack-card">
+      <h4 class="tname">▲ Next.js (React/TS)</h4>
+      <p style="font-size:.9rem;color:var(--ink-soft)">⏱ ~4–6 เดือน</p>
+      <ul class="pros">
+        <li>PWA/device session ฝั่งลูกค้า + สแกน QR ลื่น (กลุ่ม B ได้เปรียบ)</li>
+        <li>UX มือถือทันสมัย เหมาะหน้าร้าน</li>
+        <li>ecosystem JS เดียวจบ</li>
+      </ul>
+      <ul class="cons"><li>งาน admin/billing CRUD ต้องประกอบเองมากกว่า</li></ul>
+    </div>
+  </div>
+  <div class="callout tip"><strong>สรุป:</strong> งานนี้แบ่งเป็นสองฝั่งชัด — ฝั่งจัดการ/บิล (A/C/D) Laravel เร็วกว่า ส่วนฝั่งลูกค้า/QR (B) Next.js เร็วกว่า ผลต่างรวมเล็ก (~10%) เลือกตามทีมที่หาได้จริง หรือทำ hybrid (Laravel API + PWA frontend) ก็ได้</div>
+</section>
+
+<!-- ================= SECTION 8 ================= -->
+<section id="cost">
+  <h2 class="sec-title"><span class="sec-num">8</span> ค่าใช้จ่าย &amp; ราคา</h2>
+  <p class="sec-sub">ทุกตัวเลขมีที่มา: ราคา ← man-day ← module</p>
+
+  <h3>งานสนับสนุน (non-feature)</h3>
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>งานสนับสนุน</th><th class="num">md low</th><th class="num">md high</th></tr></thead>
+      <tbody>
+        <tr><td>วิเคราะห์ / ออกแบบระบบ &amp; UX</td><td class="num">8</td><td class="num">14</td></tr>
+        <tr><td>ทดสอบ (QA / test)</td><td class="num">10</td><td class="num">16</td></tr>
+        <tr><td>ติดตั้ง / ขึ้นระบบ (Deploy / DevOps · multi-tenant)</td><td class="num">8</td><td class="num">13</td></tr>
+        <tr><td>จัดการโครงการ (PM)</td><td class="num">8</td><td class="num">13</td></tr>
+        <tr class="total"><td>รวมงานสนับสนุน</td><td class="num">34</td><td class="num">56</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>สรุป man-day → ราคา</h3>
+  <div class="tbl-wrap">
+    <table>
+      <tbody>
+        <tr><td>รวมย่อย (dev + support)</td><td class="num">113</td><td class="num">186</td></tr>
+        <tr><td>+ Contingency 20%</td><td class="num">23</td><td class="num">37</td></tr>
+        <tr class="grand"><td>รวม man-day ทั้งสิ้น</td><td class="num">~136</td><td class="num">~223</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h4>ราคา (ก่อน VAT) ตามเรต</h4>
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>เรต man-day</th><th class="num">ราคา low</th><th class="num">ราคา high</th></tr></thead>
+      <tbody>
+        <tr><td>Junior · 2,500 บาท/วัน</td><td class="num">340,000</td><td class="num">557,500</td></tr>
+        <tr><td>Mid · 4,000 บาท/วัน</td><td class="num">544,000</td><td class="num">892,000</td></tr>
+        <tr><td>Senior · 6,000 บาท/วัน</td><td class="num">816,000</td><td class="num">1,338,000</td></tr>
+        <tr><td>Expert · 8,000 บาท/วัน</td><td class="num">1,088,000</td><td class="num">1,784,000</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="callout tip">
+    <strong>คำแนะนำ — แบ่งเฟส:</strong> แนะนำแบ่ง 2 เฟส ลดความเสี่ยง — ตรวจสอบ flow คูปอง/redemption ให้ใช้จริงก่อน แล้วค่อยทำระบบเก็บเงินอัตโนมัติ multi-tenant
+    <ul>
+      <li><strong>เฟส 1:</strong> Coupon MVP (กลุ่ม A บางส่วน + B ทั้งหมด): คูปอง + ของรางวัล + QR/device session + redemption หน้าร้าน ใช้ได้จริงกับร้านนำร่อง → ~70–115 man-day (รวม support + contingency) ≈ 175,000–920,000 บาท (ตามเรต Junior–Expert)</li>
+      <li><strong>เฟส 2:</strong> Multi-tenant เต็ม + billing รายวัน + PromptPay + Platform Admin dashboard (กลุ่ม C/D) — ตีราคาแม่นเมื่อยืนยันโมเดลค่าบริการและจำนวนร้าน</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ================= SECTION 9 ================= -->
+<section id="notes">
+  <h2 class="sec-title"><span class="sec-num">9</span> สมมติฐาน · ความเสี่ยง · คำถามที่ต้องถามเพิ่ม</h2>
+
+  <h3>สมมติฐาน (Assumptions)</h3>
+  <ul>
+    <li>ลูกค้าปลายทางไม่มีระบบ login เต็ม — คูปองเก็บฝั่ง server ผูกกับทะเบียนลูกค้าเบื้องต้น (ชื่อ/เบอร์) ของแต่ละร้าน; session เป็น device-bound token (localStorage/PWA); เปลี่ยนเครื่อง = พนักงานค้นหาลูกค้าแล้วผูกเครื่องใหม่ คูปองไม่หาย</li>
+    <li>เก็บข้อมูลลูกค้าขั้นต่ำ (ชื่อ/เบอร์) ตอนสแกนครั้งแรกเพื่อให้พนักงานค้นหา/ผูกเครื่องใหม่ได้ — ต้องมี consent ตาม PDPA ที่หน้าร้าน</li>
+    <li>PromptPay สร้าง QR เอง (EMVCo) ไม่ต่อ bank API → ยืนยันยอดชำระแบบ manual (อัปสลิป + แอดมินยืนยัน)</li>
+    <li>ค่าบริการรายวันเป็นค่า subscription SaaS ปกติ ไม่มีดอกเบี้ย (halal)</li>
+    <li>scale กลาง: ใช้ single DB แบบ row-level multi-tenant (tenant_id) บน cloud มาตรฐานเพียงพอ</li>
+    <li>redeem ที่หน้าร้านเท่านั้น ไม่มีการใช้คูปองออนไลน์</li>
+    <li>ใช้ design system / component library สำเร็จรูป ไม่ออกแบบ UI จากศูนย์</li>
+    <li>พนักงานร้านสแกนผ่านเว็บ responsive บนมือถือ ไม่ต้องมี native app แยก</li>
+  </ul>
+
+  <h3>ความเสี่ยง (Risks)</h3>
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>ความเสี่ยง</th><th>ผลกระทบ</th><th>โอกาส</th><th>แนวทางรับมือ</th></tr></thead>
+      <tbody>
+        <tr><td>พนักงานค้นหา/ผูกลูกค้าผิดคนตอนเปลี่ยนเครื่อง → คูปองไปเข้าผิดคน</td><td>กลาง</td><td>กลาง</td><td>ค้นด้วยเบอร์+ชื่อ, ยืนยันตัวตนก่อนผูก, เก็บ log ทุกการผูกเครื่อง</td></tr>
+        <tr><td>ยืนยัน PromptPay แบบ manual → งานแอดมินเยอะ/ผิดพลาด</td><td>กลาง</td><td>กลาง</td><td>ออกแบบ flow อัปสลิป + กระทบยอดง่าย, เผื่อต่อ bank API ภายหลัง</td></tr>
+        <tr><td>ข้อมูลข้ามร้านรั่ว (tenant isolation)</td><td>สูง</td><td>ต่ำ</td><td>บังคับ tenant scoping ทุก query + เทสต์เฉพาะ, code review</td></tr>
+        <tr><td>ปลอม QR / ใช้คูปองซ้ำ</td><td>สูง</td><td>กลาง</td><td>signed token + ตรวจสิทธิ์ server-side + redemption idempotent</td></tr>
+        <tr><td>ร้านค้างชำระค่าบริการรายวัน</td><td>กลาง</td><td>กลาง</td><td>auto-suspend + แจ้งเตือนล่วงหน้า + ปลดล็อกเมื่อชำระ</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>คำถามที่ต้องถามลูกค้าเพิ่ม</h3>
+  <ul>
+    <li>ค่าบริการรายวันต่อร้านคิดเท่าไร และมีแพ็กเกจ/tier หลายระดับไหม?</li>
+    <li>เก็บข้อมูลลูกค้าแค่ไหนตอนสแกนครั้งแรก (ชื่อ/เบอร์อย่างเดียว?) และวาง consent PDPA ที่หน้าร้านอย่างไร?</li>
+    <li>คาดว่ามีร้านกี่ร้าน และทรานแซกชัน redeem ต่อวันประมาณเท่าไร (นิยาม 'กลาง')?</li>
+    <li>ต้องมีแอป staff แยกไหม หรือเว็บ responsive สแกนผ่านมือถือพอ?</li>
+    <li>อนาคตต้องการ reconcile PromptPay อัตโนมัติ (ต่อ bank/gateway) ไหม?</li>
+    <li>ต้องออกใบเสร็จ/ใบกำกับภาษีค่าบริการให้ร้านไหม?</li>
+    <li>คูปองผูกร้านเดียวเท่านั้น หรือมีแคมเปญข้ามร้าน?</li>
+  </ul>
+
+  <h3>สิ่งที่ไม่รวมในราคานี้</h3>
+  <ul>
+    <li>ค่า cloud / hosting / โดเมน</li>
+    <li>ค่าธรรมเนียมธนาคาร / PromptPay (ถ้ามี)</li>
+    <li>ค่า SMS / LINE notify (หากเพิ่มภายหลัง)</li>
+    <li>เนื้อหา / รูปคูปอง &amp; ของรางวัล (ร้านจัดเตรียม)</li>
+    <li>งานดูแลหลังส่งมอบ (maintenance) — เสนอแยกเป็นสัญญารายปี</li>
+  </ul>
+</section>
+
+<footer>
+  <p class="sig">จัดทำโดย เคาะดีญะฮ์ — ที่ปรึกษา Presales / Solution Architect</p>
+  <p>เอกสาร v0.1 (draft) · ช่วงราคา ≈ 340,000 – 1,784,000 บาท · ยังไม่รวม VAT</p>
+  <p>"เก็บให้ครบ ตีให้จริง เขียนสมมติฐานให้ชัด" — ราคาที่มั่ว ทำร้ายทุกฝ่าย</p>
+</footer>
+
+</div>
+
+<button id="toTop" aria-label="ขึ้นบนสุด" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
+
+<script>
+(function(){
+  var links = Array.prototype.slice.call(document.querySelectorAll('nav.toc a'));
+  var map = {};
+  links.forEach(function(a){ map[a.getAttribute('href').slice(1)] = a; });
+  var obs = new IntersectionObserver(function(entries){
+    entries.forEach(function(e){
+      if(e.isIntersecting){
+        links.forEach(function(a){ a.classList.remove('active'); });
+        if(map[e.target.id]) map[e.target.id].classList.add('active');
+      }
+    });
+  }, { rootMargin:'-96px 0px -65% 0px', threshold:0 });
+  document.querySelectorAll('section[id]').forEach(function(s){ obs.observe(s); });
+
+  var btn = document.getElementById('toTop');
+  window.addEventListener('scroll', function(){
+    if(window.scrollY > 600) btn.classList.add('show'); else btn.classList.remove('show');
+  }, { passive:true });
+})();
+</script>
+
+</body>
+</html>
