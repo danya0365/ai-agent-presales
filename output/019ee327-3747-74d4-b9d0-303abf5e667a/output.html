@@ -56,20 +56,36 @@
     padding:6px 14px;border-radius:8px;font-size:.85rem;
   }
 
-  /* ---------- TOC ---------- */
+  /* ---------- TOC: sticky / pin ---------- */
   nav.toc{
-    background:var(--card);border:1px solid var(--line);border-radius:14px;
-    padding:18px 22px;margin:-26px auto 36px;max-width:1040px;box-shadow:var(--shadow-lg);
-    display:flex;flex-wrap:wrap;gap:8px 22px;position:relative;
+    position:sticky;top:0;z-index:50;
+    background:rgba(251,250,246,.95);backdrop-filter:blur(6px);
+    border-bottom:1px solid var(--line);box-shadow:var(--shadow);
   }
-  nav.toc strong{color:var(--teal-dark);width:100%;font-size:.9rem;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;}
-  nav.toc a{color:var(--ink);text-decoration:none;font-size:.95rem;font-weight:500;padding:3px 0;border-bottom:2px solid transparent;}
-  nav.toc a:hover{color:var(--teal);border-bottom-color:var(--amber);}
+  nav.toc .toc-inner{
+    max-width:1040px;margin:0 auto;padding:10px 20px;
+    display:flex;align-items:center;gap:6px;overflow-x:auto;white-space:nowrap;
+    -ms-overflow-style:none;scrollbar-width:none;
+  }
+  nav.toc .toc-inner::-webkit-scrollbar{display:none;}
+  nav.toc strong{color:var(--teal-dark);font-size:.78rem;text-transform:uppercase;letter-spacing:1px;flex:0 0 auto;margin-right:6px;}
+  nav.toc a{flex:0 0 auto;color:var(--ink);text-decoration:none;font-size:.9rem;font-weight:500;padding:4px 12px;border-radius:20px;transition:background .15s,color .15s;}
+  nav.toc a:hover{background:var(--bg2);}
+  nav.toc a.active{background:var(--teal);color:#fff;}
+
+  /* ---------- Back to top ---------- */
+  #toTop{
+    position:fixed;bottom:24px;right:24px;z-index:60;display:none;
+    width:44px;height:44px;border:none;border-radius:50%;cursor:pointer;
+    background:var(--teal-dark);color:#fff;font-size:1.2rem;box-shadow:var(--shadow-lg);
+  }
+  #toTop:hover{background:var(--teal);}
+  #toTop.show{display:block;}
 
   /* ---------- Sections ---------- */
   section{
     background:var(--card);border:1px solid var(--line);border-radius:16px;
-    padding:30px 32px;margin-bottom:28px;box-shadow:var(--shadow);
+    padding:30px 32px;margin-bottom:28px;box-shadow:var(--shadow);scroll-margin-top:64px;
   }
   .sec-num{
     display:inline-flex;align-items:center;justify-content:center;
@@ -111,6 +127,13 @@
   .scope-in h4{color:var(--green);}
   .scope-out h4{color:var(--red);}
 
+  /* ---------- Use case cards ---------- */
+  .uc-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:14px 0;}
+  .uc-card{background:#fff;border:1px solid var(--line);border-radius:12px;padding:16px;}
+  .uc-card .uc-title{font-weight:600;color:var(--teal-dark);}
+  .uc-card .uc-actor{font-size:.78rem;color:var(--amber);font-weight:600;margin-top:2px;}
+  .uc-card .uc-desc{font-size:.9rem;color:var(--ink-soft);margin-top:6px;}
+
   /* ---------- Callout ---------- */
   .callout{border-radius:12px;padding:16px 20px;margin:18px 0;border-left:5px solid var(--amber);background:var(--yellow-bg);}
   .callout.tip{border-left-color:var(--teal);background:var(--green-bg);}
@@ -119,7 +142,7 @@
   /* ---------- Price hero ---------- */
   .price-hero{
     background:linear-gradient(135deg,var(--amber),#B5762E);color:#fff;
-    border-radius:16px;padding:26px 28px;margin:22px 0;text-align:center;box-shadow:var(--shadow-lg);
+    border-radius:16px;padding:26px 28px;margin:22px 0 28px;text-align:center;box-shadow:var(--shadow-lg);
   }
   .price-hero .lbl{font-size:.95rem;opacity:.9;letter-spacing:1px;text-transform:uppercase;}
   .price-hero .big{font-size:2.1rem;font-weight:700;margin:6px 0;}
@@ -145,14 +168,14 @@
   .sig{font-weight:600;color:var(--teal-dark);}
 
   @media(max-width:720px){
-    .two-col,.stack-grid{grid-template-columns:1fr;}
+    .two-col,.stack-grid,.uc-grid{grid-template-columns:1fr;}
     header.hero h1{font-size:1.5rem;}
     section{padding:22px 18px;}
     .sec-sub{margin-left:0;}
   }
   @media print{
     body{background:#fff;font-size:12px;}
-    nav.toc{display:none;}
+    nav.toc,#toTop{display:none;}
     section{box-shadow:none;border:1px solid #ccc;break-inside:avoid;}
     header.hero{background:var(--teal-dark)!important;-webkit-print-color-adjust:exact;print-color-adjust:exact;}
     thead th,tr.grand td,.price-hero{-webkit-print-color-adjust:exact;print-color-adjust:exact;}
@@ -164,7 +187,6 @@
 <header class="hero">
   <span class="kicker">Presales · Solution Analysis</span>
   <h1>DOLE Book Store — ระบบจัดการสื่อการเรียนรู้</h1>
-  <p>เอกสารวิเคราะห์ระบบ &amp; ใบประเมินค่าใช้จ่าย (Freelance)</p>
   <p>กรมส่งเสริมการเรียนรู้ (กสร.) · Department of Learning Encouragement</p>
   <div class="meta-row">
     <span>📅 วันที่: 2026-06-20</span>
@@ -173,69 +195,57 @@
   </div>
 </header>
 
+<!-- สารบัญ sticky/pin + scroll-spy -->
+<nav class="toc">
+  <div class="toc-inner">
+    <strong>สารบัญ</strong>
+    <a href="#overview">1. ภาพรวม</a>
+    <a href="#scope">2. ขอบเขตงาน</a>
+    <a href="#actors">3. ผู้ใช้ &amp; บทบาท</a>
+    <a href="#usecases">4. Use Case</a>
+    <a href="#modules">5. โมดูล &amp; man-day</a>
+    <a href="#nonfunc">6. Non-functional</a>
+    <a href="#timeline">7. Timeline &amp; Stack</a>
+    <a href="#cost">8. ค่าใช้จ่าย &amp; ราคา</a>
+    <a href="#notes">9. สมมติฐาน &amp; ความเสี่ยง</a>
+  </div>
+</nav>
+
 <div class="wrap">
 
-<nav class="toc">
-  <strong>สารบัญ</strong>
-  <a href="#overview">1. ภาพรวม &amp; วิเคราะห์ระบบ</a>
-  <a href="#scope">2. ขอบเขตงาน</a>
-  <a href="#modules">3. โมดูล &amp; Use Case</a>
-  <a href="#nonfunc">4. Non-functional</a>
-  <a href="#timeline">5. Timeline: Next.js vs Laravel</a>
-  <a href="#cost">6. ประเมินค่าใช้จ่าย</a>
-  <a href="#assumption">7. สมมติฐาน &amp; ความเสี่ยง</a>
-</nav>
+<!-- Price hero -->
+<div class="price-hero">
+  <div class="lbl">ช่วงราคารวมทั้งโครงการ (ก่อน VAT)</div>
+  <div class="big">≈ 550,000 – 3,040,000 บาท</div>
+  <div class="sub">รวมทั้ง ecosystem: Book Store + SSO + Big Data + AI Adaptive Learning · ขึ้นกับระดับเรต (Junior–Expert)</div>
+</div>
 
 <!-- ================= SECTION 1 ================= -->
 <section id="overview">
-  <h2 class="sec-title"><span class="sec-num">1</span> ภาพรวม &amp; วิเคราะห์ระบบ</h2>
-  <p class="sec-sub">รูปทั้ง 3 หน้าที่พี่ส่งมาคือ "ระบบเดียวกัน" — มองจากคนละมุม</p>
-
-  <p><strong>มันคือระบบอะไร?</strong> เป็นแพลตฟอร์มกลางของกรมส่งเสริมการเรียนรู้ ชื่อ
-  <strong>"DOLE Book Store / ระบบจัดการสื่อการเรียนรู้"</strong> ทำหน้าที่เป็น
-  <em>คลังหนังสืออิเล็กทรอนิกส์ (e-book PDF) + ระบบสั่งซื้อ/เบิกสื่อ</em> สำหรับโรงเรียนและผู้เรียนในสังกัด
-  แล้วต่อยอดเชื่อมเข้าสู่ระบบกลางของกรม (SSO, Big Data) จนถึง AI แนะนำการเรียนรู้รายบุคคล</p>
-
-  <div class="tbl-wrap">
-  <table>
-    <thead><tr><th>รูป</th><th>หัวข้อในเอกสาร</th><th>บอกอะไรกับเรา</th></tr></thead>
-    <tbody>
-      <tr><td>รูปที่ 1</td><td><strong>7.1.3</strong> ค่าใช้จ่ายรายฟังก์ชัน</td><td>ระบุ "หัวใจ" ที่ต้องคิดเงิน 5 โมดูล: จัดการสิทธิ์ผู้ใช้, จัดการ e-book, สั่งซื้อ, ประวัติสั่งซื้อ, รายงาน/สถิติ</td></tr>
-      <tr><td>รูปที่ 2</td><td><strong>7.1.1</strong> Diagram สถาปัตยกรรม</td><td>ภาพใหญ่ทั้ง ecosystem: SSO, DOLE Learner Data, e-Market, Digital Wallet/EKAS/Credit Bank/e-Portfolio, Big Data, AI Adaptive Learning (Claude/Gemini/OpenAI), เชื่อม HRMS/E-Saraban แบ่งเฟส 1–2</td></tr>
-      <tr><td>รูปที่ 3</td><td><strong>7.1.2</strong> แนวคิดการออกแบบ</td><td>ยืนยันชื่อระบบหลัก = DOLE Book Store + รายการระบบงานย่อยและ Single Sign-On</td></tr>
-    </tbody>
-  </table>
-  </div>
-
-  <h3>เป้าหมายธุรกิจ (Business Goal)</h3>
+  <h2 class="sec-title"><span class="sec-num">1</span> ภาพรวม &amp; เป้าหมายธุรกิจ</h2>
+  <p class="sec-sub">แพลตฟอร์มกลางของกรม — มองตั้งแต่คลังสื่อจนถึง AI แนะนำการเรียนรู้</p>
+  <p>แพลตฟอร์มกลางของกรมส่งเสริมการเรียนรู้ ทำหน้าที่เป็นคลังหนังสืออิเล็กทรอนิกส์ (e-book PDF)
+  + ระบบสั่งซื้อ/เบิกสื่อสำหรับโรงเรียนและผู้เรียนในสังกัด แล้วต่อยอดเชื่อมเข้าระบบกลาง (SSO, Big Data)
+  จนถึง AI แนะนำการเรียนรู้รายบุคคล</p>
   <ul>
-    <li><strong>ปัญหาที่แก้:</strong> รวมศูนย์สื่อการเรียนรู้ดิจิทัลของกรมไว้ที่เดียว ให้โรงเรียนเข้าถึง/เบิก/สั่งซื้อได้สะดวก ลดงานเอกสาร และมีข้อมูลการใช้งานเพื่อวางนโยบาย</li>
-    <li><strong>ตัววัดความสำเร็จ:</strong> จำนวนสื่อในคลัง, ยอดดาวน์โหลด/สั่งซื้อ, จำนวนโรงเรียน/ผู้ใช้ที่ active, ความครอบคลุมรายจังหวัด</li>
+    <li><strong>ปัญหาที่แก้:</strong> รวมศูนย์สื่อการเรียนรู้ดิจิทัลของกรมไว้ที่เดียว ให้โรงเรียนเข้าถึง/เบิก/สั่งซื้อสะดวก ลดงานเอกสาร และมีข้อมูลการใช้งานเพื่อวางนโยบาย</li>
+    <li><strong>ตัววัดความสำเร็จ:</strong> จำนวนสื่อในคลัง, ยอดดาวน์โหลด/สั่งซื้อ, จำนวนโรงเรียน/ผู้ใช้ active, ความครอบคลุมรายจังหวัด</li>
   </ul>
-
-  <h3>ผู้ใช้ &amp; บทบาท (Actors)</h3>
-  <div class="tbl-wrap">
-  <table>
-    <thead><tr><th>บทบาท</th><th>ทำอะไรได้</th></tr></thead>
-    <tbody>
-      <tr><td>ผู้เรียน / นักเรียน</td><td>ค้นหา/อ่าน/ดาวน์โหลดสื่อ e-book ตามสิทธิ์ที่ได้รับ</td></tr>
-      <tr><td>ครู</td><td>เลือกรายการหนังสือจากคลัง สร้างคำสั่งซื้อ/เบิกสื่อให้ห้องเรียน</td></tr>
-      <tr><td>ผู้บริหารโรงเรียน</td><td>อนุมัติคำสั่งซื้อ ดูประวัติและรายงานระดับโรงเรียน</td></tr>
-      <tr><td>เจ้าหน้าที่ / ผู้ดูแลระบบ (กสร.)</td><td>จัดการสิทธิ์ทุกระดับ จัดการคลังสื่อ ดูรายงานภาพรวมรายจังหวัด</td></tr>
-      <tr><td>โรงพิมพ์ / หน่วยงานภายนอก</td><td>ส่งข้อมูลหนังสือเข้าระบบผ่าน API</td></tr>
-    </tbody>
-  </table>
+  <div class="stats">
+    <div class="stat"><div class="v">220–380</div><div class="k">man-day รวม</div></div>
+    <div class="stat"><div class="v">11</div><div class="k">โมดูลพัฒนา</div></div>
+    <div class="stat"><div class="v">20%</div><div class="k">Contingency</div></div>
+    <div class="stat"><div class="v">4 ระดับ</div><div class="k">เรตที่ใช้</div></div>
   </div>
 </section>
 
 <!-- ================= SECTION 2 ================= -->
 <section id="scope">
   <h2 class="sec-title"><span class="sec-num">2</span> ขอบเขตงาน (Scope)</h2>
-  <p class="sec-sub">แยก in/out ให้ชัด — เกราะกันงานบานปลายและความเข้าใจผิดเรื่องราคา</p>
-
+  <p class="sec-sub">แยก in/out ให้ชัด — กันงานบานปลายและความเข้าใจผิดเรื่องราคา</p>
   <div class="two-col">
     <div class="scope-box scope-in">
-      <h4>✅ อยู่ในขอบเขต (In-scope)</h4>
+      <h4>✅ อยู่ในขอบเขต</h4>
       <ul>
         <li>ระบบจัดการสิทธิ์ผู้ใช้ &amp; บทบาท (RBAC)</li>
         <li>คลังหนังสืออิเล็กทรอนิกส์ + อัปโหลด/จัดหมวด PDF + PDF viewer</li>
@@ -248,52 +258,78 @@
       </ul>
     </div>
     <div class="scope-box scope-out">
-      <h4>⛔ อยู่นอกขอบเขต (Out-of-scope)</h4>
+      <h4>⛔ อยู่นอกขอบเขต</h4>
       <ul>
         <li>เนื้อหา/ลิขสิทธิ์หนังสือ (ลูกค้า/โรงพิมพ์จัดเตรียม)</li>
         <li>ค่า license/โทเคน AI รายเดือน (Claude/Gemini/OpenAI)</li>
         <li>ระบบบัญชี/การเงินภายในกรม</li>
-        <li>การพัฒนาระบบปลายทางที่เชื่อม (HRMS, E-Saraban, EKAS ฯลฯ) — ทำเฉพาะ "ส่วนเชื่อมต่อ" ฝั่งเรา</li>
+        <li>การพัฒนาระบบปลายทางที่เชื่อม (HRMS, E-Saraban, EKAS ฯลฯ) — ทำเฉพาะส่วนเชื่อมต่อฝั่งเรา</li>
         <li>Migrate ข้อมูลเก่า หากยังไม่ระบุปริมาณ/รูปแบบ</li>
         <li>ค่า cloud/hosting/โดเมน &amp; งานดูแลหลังส่งมอบ (เสนอแยก)</li>
       </ul>
     </div>
   </div>
-  <div class="callout">
-    <strong>หมายเหตุจากเคาะดีญะฮ์:</strong> ตามที่พี่ยืนยัน ฉันตีราคา "ทั้ง ecosystem" รวม AI/Big Data
-    แต่ส่วนนี้ความไม่แน่นอนสูง (เป็นงาน R&amp;D) — ฉันจึงแนะนำให้แบ่งเฟส (ดูในส่วนค่าใช้จ่าย)
-  </div>
 </section>
 
 <!-- ================= SECTION 3 ================= -->
-<section id="modules">
-  <h2 class="sec-title"><span class="sec-num">3</span> โมดูล &amp; Use Case หลัก</h2>
-  <p class="sec-sub">แตกเป็น 11 โมดูล จัด 4 กลุ่ม — นี่คือฐานของการตีราคาในส่วนถัดไป</p>
-
+<section id="actors">
+  <h2 class="sec-title"><span class="sec-num">3</span> ผู้ใช้ &amp; บทบาท (Actors)</h2>
   <div class="tbl-wrap">
-  <table>
-    <thead><tr><th>กลุ่ม</th><th>รหัส</th><th>โมดูล</th><th>คำอธิบาย</th><th>ความซับซ้อน</th></tr></thead>
-    <tbody>
-      <tr><td><span class="grp">A</span></td><td>M-01</td><td>จัดการสิทธิ์ / ผู้ใช้ (RBAC)</td><td>กำหนดระดับสิทธิ์ผู้เรียน/ครู/ผู้บริหาร/แอดมิน คุมการเข้าถึงสื่อและฟังก์ชัน</td><td><span class="badge b-mid">กลาง</span></td></tr>
-      <tr><td><span class="grp">A</span></td><td>M-02</td><td>จัดการหนังสืออิเล็กทรอนิกส์</td><td>อัปโหลด PDF, จัดหมวดตามวิชา/ระดับชั้น/ประเภท, PDF viewer, API เชื่อมโรงพิมพ์</td><td><span class="badge b-high">สูง</span></td></tr>
-      <tr><td><span class="grp">A</span></td><td>M-03</td><td>จัดการคำสั่งซื้อ</td><td>เลือกหนังสือจากคลัง, ตะกร้า, สร้าง/อนุมัติคำสั่งซื้อ</td><td><span class="badge b-mid">กลาง–สูง</span></td></tr>
-      <tr><td><span class="grp">A</span></td><td>M-04</td><td>ประวัติการสั่งซื้อ</td><td>แสดงประวัติคำสั่งซื้อทั้งหมดของโรงเรียน/ผู้ใช้ + filter</td><td><span class="badge b-mid">กลาง</span></td></tr>
-      <tr><td><span class="grp">A</span></td><td>M-05</td><td>รายงาน &amp; สถิติ</td><td>ยอดดาวน์โหลด, จำนวนคำสั่งซื้อจำแนกรายจังหวัด, dashboard, export</td><td><span class="badge b-mid">กลาง</span></td></tr>
-      <tr><td><span class="grp">B</span></td><td>M-06</td><td>Single Sign-On (SSO)</td><td>เชื่อม OIDC/SAML กับ identity กลางของกรม</td><td><span class="badge b-high">สูง</span></td></tr>
-      <tr><td><span class="grp">B</span></td><td>M-07</td><td>เชื่อม API ภายนอก</td><td>Digital Wallet/EKAS/Credit Bank/e-Portfolio/HRMS/E-Saraban (ส่วนเชื่อมฝั่งเรา)</td><td><span class="badge b-high">สูง (ไม่แน่นอน)</span></td></tr>
-      <tr><td><span class="grp">C</span></td><td>M-08</td><td>Big Data pipeline / ETL</td><td>ดึงข้อมูลจากระบบต่าง ๆ เข้า data lake/warehouse</td><td><span class="badge b-high">สูง</span></td></tr>
-      <tr><td><span class="grp">C</span></td><td>M-09</td><td>Analytics dashboard</td><td>แดชบอร์ดวิเคราะห์บน Big Data</td><td><span class="badge b-mid">กลาง–สูง</span></td></tr>
-      <tr><td><span class="grp">D</span></td><td>M-10</td><td>AI integration layer + RAG</td><td>เชื่อม Claude/Gemini/OpenAI, orchestration, RAG บนเนื้อหา e-book</td><td><span class="badge b-high">สูง</span></td></tr>
-      <tr><td><span class="grp">D</span></td><td>M-11</td><td>Adaptive recommendation engine</td><td>แนะนำสื่อ/เส้นทางเรียนรู้รายบุคคลจากพฤติกรรม</td><td><span class="badge b-high">สูง (R&amp;D)</span></td></tr>
-    </tbody>
-  </table>
+    <table>
+      <thead><tr><th>บทบาท</th><th>ทำอะไรได้</th></tr></thead>
+      <tbody>
+        <tr><td>ผู้เรียน / นักเรียน</td><td>ค้นหา/อ่าน/ดาวน์โหลดสื่อ e-book ตามสิทธิ์ที่ได้รับ</td></tr>
+        <tr><td>ครู</td><td>เลือกรายการหนังสือจากคลัง สร้างคำสั่งซื้อ/เบิกสื่อให้ห้องเรียน</td></tr>
+        <tr><td>ผู้บริหารโรงเรียน</td><td>อนุมัติคำสั่งซื้อ ดูประวัติและรายงานระดับโรงเรียน</td></tr>
+        <tr><td>เจ้าหน้าที่ / ผู้ดูแลระบบ (กสร.)</td><td>จัดการสิทธิ์ทุกระดับ จัดการคลังสื่อ ดูรายงานภาพรวมรายจังหวัด</td></tr>
+        <tr><td>โรงพิมพ์ / หน่วยงานภายนอก</td><td>ส่งข้อมูลหนังสือเข้าระบบผ่าน API</td></tr>
+      </tbody>
+    </table>
   </div>
-  <p style="font-size:.88rem;color:var(--ink-soft);">กลุ่ม <span class="grp">A</span> Core Book Store · <span class="grp">B</span> SSO &amp; Integration · <span class="grp">C</span> Big Data · <span class="grp">D</span> AI Adaptive Learning</p>
 </section>
 
 <!-- ================= SECTION 4 ================= -->
+<section id="usecases">
+  <h2 class="sec-title"><span class="sec-num">4</span> Use Case หลัก</h2>
+  <div class="uc-grid">
+    <div class="uc-card"><div class="uc-title">ค้นหาและอ่าน/ดาวน์โหลดสื่อ</div><div class="uc-actor">ผู้เรียน / นักเรียน</div><div class="uc-desc">ค้นหาหนังสือในคลังตามวิชา/ระดับชั้น แล้วอ่านผ่าน PDF viewer หรือดาวน์โหลดตามสิทธิ์ที่ได้รับ</div></div>
+    <div class="uc-card"><div class="uc-title">สั่งซื้อ/เบิกสื่อให้ห้องเรียน</div><div class="uc-actor">ครู</div><div class="uc-desc">เลือกหนังสือจากคลังใส่ตะกร้า แล้วสร้างคำสั่งซื้อ/เบิกสื่อให้ห้องเรียน</div></div>
+    <div class="uc-card"><div class="uc-title">อนุมัติคำสั่งซื้อ &amp; ดูรายงานโรงเรียน</div><div class="uc-actor">ผู้บริหารโรงเรียน</div><div class="uc-desc">อนุมัติคำสั่งซื้อของครู และดูประวัติ/รายงานการใช้สื่อระดับโรงเรียน</div></div>
+    <div class="uc-card"><div class="uc-title">จัดการคลังสื่อ &amp; ดูภาพรวมรายจังหวัด</div><div class="uc-actor">เจ้าหน้าที่ / ผู้ดูแลระบบ (กสร.)</div><div class="uc-desc">จัดการสิทธิ์ทุกระดับ จัดหมวดคลังสื่อ และดูรายงานภาพรวมการใช้งานรายจังหวัด</div></div>
+    <div class="uc-card"><div class="uc-title">ส่งข้อมูลหนังสือเข้าระบบผ่าน API</div><div class="uc-actor">โรงพิมพ์ / หน่วยงานภายนอก</div><div class="uc-desc">ส่ง metadata และไฟล์หนังสือเข้าคลังผ่าน API มาตรฐาน</div></div>
+    <div class="uc-card"><div class="uc-title">รับคำแนะนำสื่อรายบุคคล</div><div class="uc-actor">ผู้เรียน / นักเรียน</div><div class="uc-desc">ระบบ AI แนะนำสื่อ/เส้นทางเรียนรู้ที่เหมาะกับผู้เรียนจากพฤติกรรมการใช้งาน</div></div>
+  </div>
+</section>
+
+<!-- ================= SECTION 5 ================= -->
+<section id="modules">
+  <h2 class="sec-title"><span class="sec-num">5</span> โมดูล &amp; ประเมิน man-day</h2>
+  <p class="sec-sub">ฐานของการตีราคา — แตกเป็น 11 โมดูล 4 กลุ่ม · man-day เป็นช่วง low–high</p>
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>กลุ่ม</th><th>รหัส</th><th>โมดูล</th><th>ความซับซ้อน</th><th class="num">md low</th><th class="num">md high</th></tr></thead>
+      <tbody>
+        <tr><td><span class="grp">A</span></td><td>M-01</td><td><strong>จัดการสิทธิ์ / ผู้ใช้ (RBAC)</strong><br><span style="font-size:.85rem;color:var(--ink-soft)">กำหนดระดับสิทธิ์ผู้เรียน/ครู/ผู้บริหาร/แอดมิน คุมการเข้าถึงสื่อและฟังก์ชัน</span></td><td><span class="badge b-mid">medium</span></td><td class="num">6</td><td class="num">10</td></tr>
+        <tr><td><span class="grp">A</span></td><td>M-02</td><td><strong>จัดการหนังสืออิเล็กทรอนิกส์</strong><br><span style="font-size:.85rem;color:var(--ink-soft)">อัปโหลด PDF, จัดหมวดตามวิชา/ระดับชั้น/ประเภท, PDF viewer, API เชื่อมโรงพิมพ์</span></td><td><span class="badge b-high">high</span></td><td class="num">15</td><td class="num">25</td></tr>
+        <tr><td><span class="grp">A</span></td><td>M-03</td><td><strong>จัดการคำสั่งซื้อ</strong><br><span style="font-size:.85rem;color:var(--ink-soft)">เลือกหนังสือจากคลัง, ตะกร้า, สร้าง/อนุมัติคำสั่งซื้อ</span></td><td><span class="badge b-mid">medium-high</span></td><td class="num">10</td><td class="num">16</td></tr>
+        <tr><td><span class="grp">A</span></td><td>M-04</td><td><strong>ประวัติการสั่งซื้อ</strong><br><span style="font-size:.85rem;color:var(--ink-soft)">แสดงประวัติคำสั่งซื้อทั้งหมดของโรงเรียน/ผู้ใช้ + filter</span></td><td><span class="badge b-mid">medium</span></td><td class="num">4</td><td class="num">7</td></tr>
+        <tr><td><span class="grp">A</span></td><td>M-05</td><td><strong>รายงาน &amp; สถิติ</strong><br><span style="font-size:.85rem;color:var(--ink-soft)">ยอดดาวน์โหลด, จำนวนคำสั่งซื้อจำแนกรายจังหวัด, dashboard, export</span></td><td><span class="badge b-mid">medium</span></td><td class="num">8</td><td class="num">14</td></tr>
+        <tr><td><span class="grp">B</span></td><td>M-06</td><td><strong>Single Sign-On (SSO)</strong><br><span style="font-size:.85rem;color:var(--ink-soft)">เชื่อม OIDC/SAML กับ identity กลางของกรม</span></td><td><span class="badge b-high">high</span></td><td class="num">8</td><td class="num">14</td></tr>
+        <tr><td><span class="grp">B</span></td><td>M-07</td><td><strong>เชื่อม API ภายนอก</strong><br><span style="font-size:.85rem;color:var(--ink-soft)">Digital Wallet/EKAS/Credit Bank/e-Portfolio/HRMS/E-Saraban (ส่วนเชื่อมฝั่งเรา)</span></td><td><span class="badge b-high">high</span></td><td class="num">15</td><td class="num">30</td></tr>
+        <tr><td><span class="grp">C</span></td><td>M-08</td><td><strong>Big Data pipeline / ETL</strong><br><span style="font-size:.85rem;color:var(--ink-soft)">ดึงข้อมูลจากระบบต่าง ๆ เข้า data lake/warehouse</span></td><td><span class="badge b-high">high</span></td><td class="num">20</td><td class="num">35</td></tr>
+        <tr><td><span class="grp">C</span></td><td>M-09</td><td><strong>Analytics dashboard</strong><br><span style="font-size:.85rem;color:var(--ink-soft)">แดชบอร์ดวิเคราะห์บน Big Data</span></td><td><span class="badge b-mid">medium-high</span></td><td class="num">10</td><td class="num">18</td></tr>
+        <tr><td><span class="grp">D</span></td><td>M-10</td><td><strong>AI integration layer + RAG</strong><br><span style="font-size:.85rem;color:var(--ink-soft)">เชื่อม Claude/Gemini/OpenAI, orchestration, RAG บนเนื้อหา e-book</span></td><td><span class="badge b-high">high</span></td><td class="num">18</td><td class="num">30</td></tr>
+        <tr><td><span class="grp">D</span></td><td>M-11</td><td><strong>Adaptive recommendation engine</strong><br><span style="font-size:.85rem;color:var(--ink-soft)">แนะนำสื่อ/เส้นทางเรียนรู้รายบุคคลจากพฤติกรรม</span></td><td><span class="badge b-high">high</span></td><td class="num">20</td><td class="num">35</td></tr>
+        <tr class="total"><td colspan="4">รวมงานพัฒนา (Subtotal)</td><td class="num">134</td><td class="num">234</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p style="font-size:.85rem;color:var(--ink-soft)"><strong>A</strong> Core Book Store &nbsp; <strong>B</strong> SSO &amp; Integration &nbsp; <strong>C</strong> Big Data &nbsp; <strong>D</strong> AI Adaptive Learning</p>
+</section>
+
+<!-- ================= SECTION 6 ================= -->
 <section id="nonfunc">
-  <h2 class="sec-title"><span class="sec-num">4</span> ความต้องการ Non-functional</h2>
+  <h2 class="sec-title"><span class="sec-num">6</span> ความต้องการ Non-functional</h2>
   <p class="sec-sub">สิ่งที่ลูกค้ามักไม่พูด แต่กระทบราคามากที่สุด</p>
   <div class="stats">
     <div class="stat"><div class="v">PDPA</div><div class="k">ความเป็นส่วนตัวของข้อมูลผู้เรียน</div></div>
@@ -305,141 +341,125 @@
   </div>
 </section>
 
-<!-- ================= SECTION 5 ================= -->
+<!-- ================= SECTION 7 ================= -->
 <section id="timeline">
-  <h2 class="sec-title"><span class="sec-num">5</span> ใช้เวลาทำนานเท่าไร — Next.js vs Laravel</h2>
-  <p class="sec-sub">สมมติทีม freelance 3 คน (full-stack 2 + AI/Data 1, PM/QA แชร์กัน · ~2.5 effective heads)</p>
-
-  <p>Effort รวมทั้งโครงการ = <strong>~220–380 man-day</strong> (รวม contingency 20% แล้ว — ดูที่มาในส่วน 6)
-  เมื่อกระจายให้ทีม ~2.5 คน จะได้ระยะเวลาจริง (elapsed) ประมาณ <strong>5–9 เดือน</strong></p>
-
+  <h2 class="sec-title"><span class="sec-num">7</span> Timeline &amp; เปรียบเทียบ Stack</h2>
+  <p class="sec-sub">ทีม freelance 3 คน (full-stack 2 + AI/Data 1, PM/QA แชร์ · ~2.5 effective heads)</p>
+  <p>Effort รวม ~220–380 man-day → ระยะเวลาจริงราว 5–9 เดือน</p>
   <div class="stack-grid">
     <div class="stack-card">
-      <h4><span class="tname">▲ Next.js</span> (React / TypeScript)</h4>
+      <h4 class="tname">▲ Next.js (React/TS)</h4>
+      <p style="font-size:.9rem;color:var(--ink-soft)">⏱ ~5.5–9 เดือน</p>
       <ul class="pros">
-        <li>เชื่อม AI / real-time ลื่น (อยู่ใน ecosystem JS เดียวกัน)</li>
+        <li>เชื่อม AI/real-time ลื่น (อยู่ใน ecosystem JS เดียวกัน)</li>
         <li>UX/SPA ทันสมัย เหมาะ dashboard + viewer</li>
         <li>หา dev รุ่นใหม่ง่าย</li>
       </ul>
-      <ul class="cons">
-        <li>งาน CRUD/admin ต้องประกอบเองมากกว่า (ช้ากว่าเล็กน้อยในกลุ่ม A)</li>
-      </ul>
-      <p style="margin-top:12px;"><strong>Elapsed:</strong> ~5.5–9 เดือน</p>
+      <ul class="cons"><li>งาน CRUD/admin ต้องประกอบเองมากกว่า</li></ul>
     </div>
     <div class="stack-card laravel">
-      <h4><span class="tname">▲ Laravel</span> (PHP)</h4>
+      <h4 class="tname">▲ Laravel (PHP)</h4>
+      <p style="font-size:.9rem;color:var(--ink-soft)">⏱ ~5–8.5 เดือน</p>
       <ul class="pros">
-        <li>CRUD/admin scaffolding เร็ว (Filament/Nova) → กลุ่ม A เร็วกว่า ~10%</li>
-        <li>โตเต็มที่ เหมาะระบบ order/report/admin-heavy</li>
-        <li>ทีมงานภาครัฐไทยคุ้น PHP</li>
+        <li>CRUD/admin scaffolding เร็ว (Filament) → กลุ่ม A เร็วกว่า ~10%</li>
+        <li>โตเต็มที่ เหมาะ order/report/admin-heavy</li>
+        <li>ทีมภาครัฐไทยคุ้น PHP</li>
       </ul>
-      <ul class="cons">
-        <li>ส่วน AI/Big Data ยังต้องพึ่ง service Python แยกอยู่ดี</li>
-      </ul>
-      <p style="margin-top:12px;"><strong>Elapsed:</strong> ~5–8.5 เดือน</p>
+      <ul class="cons"><li>AI/Big Data ยังต้องพึ่ง service Python แยก</li></ul>
     </div>
+  </div>
+  <div class="callout tip"><strong>สรุป:</strong> ผลต่างเวลา/ราคาระหว่างสอง stack เล็กมาก (~5–8%) เพราะกลุ่ม A ที่ Laravel ได้เปรียบเป็นแค่ ~1/3 ของงาน ส่วน AI/Big Data ต้องใช้ Python เหมือนกันทั้งคู่ → เลือกตามทีมที่หาได้จริงดีกว่าเลือกตามตัวเลข</div>
+</section>
+
+<!-- ================= SECTION 8 ================= -->
+<section id="cost">
+  <h2 class="sec-title"><span class="sec-num">8</span> ค่าใช้จ่าย &amp; ราคา</h2>
+  <p class="sec-sub">ทุกตัวเลขมีที่มา: ราคา ← man-day ← module</p>
+
+  <h3>งานสนับสนุน (non-feature)</h3>
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>งานสนับสนุน</th><th class="num">md low</th><th class="num">md high</th></tr></thead>
+      <tbody>
+        <tr><td>วิเคราะห์ / ออกแบบระบบ &amp; UX</td><td class="num">12</td><td class="num">20</td></tr>
+        <tr><td>ทดสอบ (QA / test)</td><td class="num">15</td><td class="num">25</td></tr>
+        <tr><td>ติดตั้ง / ขึ้นระบบ (Deploy / DevOps)</td><td class="num">10</td><td class="num">18</td></tr>
+        <tr><td>จัดการโครงการ (PM)</td><td class="num">12</td><td class="num">20</td></tr>
+        <tr class="total"><td>รวมงานสนับสนุน</td><td class="num">49</td><td class="num">83</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>สรุป man-day → ราคา</h3>
+  <div class="tbl-wrap">
+    <table>
+      <tbody>
+        <tr><td>รวมย่อย (dev + support)</td><td class="num">183</td><td class="num">317</td></tr>
+        <tr><td>+ Contingency 20%</td><td class="num">37</td><td class="num">63</td></tr>
+        <tr class="grand"><td>รวม man-day ทั้งสิ้น</td><td class="num">~220</td><td class="num">~380</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h4>ราคา (ก่อน VAT) ตามเรต</h4>
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>เรต man-day</th><th class="num">ราคา low</th><th class="num">ราคา high</th></tr></thead>
+      <tbody>
+        <tr><td>Junior · 2,500 บาท/วัน</td><td class="num">550,000</td><td class="num">950,000</td></tr>
+        <tr><td>Mid · 4,000 บาท/วัน</td><td class="num">880,000</td><td class="num">1,520,000</td></tr>
+        <tr><td>Senior · 6,000 บาท/วัน</td><td class="num">1,320,000</td><td class="num">2,280,000</td></tr>
+        <tr><td>Expert · 8,000 บาท/วัน</td><td class="num">1,760,000</td><td class="num">3,040,000</td></tr>
+      </tbody>
+    </table>
   </div>
 
   <div class="callout tip">
-    <strong>สรุปตรง ๆ:</strong> ผลต่างเวลา/ราคาระหว่างสอง stack <em>เล็กมาก (~5–8%)</em>
-    เพราะกลุ่ม A ที่ Laravel ได้เปรียบ เป็นแค่ ~1/3 ของงาน ส่วน AI/Big Data (กลุ่ม C–D ที่หนักสุด)
-    ต้องใช้ Python microservice เหมือนกันทั้งคู่ → <strong>เลือกตามทีมที่พี่หาได้จริงดีกว่าเลือกตามตัวเลข</strong>
-    (Laravel ถ้าทีมถนัด PHP, Next.js ถ้าเน้น UX/AI สมัยใหม่)
+    <strong>คำแนะนำ — แบ่งเฟส:</strong> AI/Big Data (กลุ่ม C–D) เป็นงาน R&amp;D ตี fixed-price เสี่ยงทั้งสองฝ่าย จึงเสนอแบ่งเฟส
+    <ul>
+      <li><strong>เฟส 1:</strong> DOLE Book Store (กลุ่ม A, 5 โมดูล): ~70–115 man-day (รวม support + contingency) → ≈ 175,000–920,000 บาท (ตามเรต Junior–Expert)</li>
+      <li><strong>เฟส 2:</strong> SSO / Big Data / AI: ค่อยตีราคาแม่นเมื่อ requirement นิ่งและตอบ Open Questions ครบ</li>
+    </ul>
   </div>
 </section>
 
-<!-- ================= SECTION 6 ================= -->
-<section id="cost">
-  <h2 class="sec-title"><span class="sec-num">6</span> ประเมินค่าใช้จ่าย (Freelance)</h2>
-  <p class="sec-sub">กฎเหล็ก: ทุกตัวเลขมีที่มา — ราคา ← man-day ← module ← requirement</p>
+<!-- ================= SECTION 9 ================= -->
+<section id="notes">
+  <h2 class="sec-title"><span class="sec-num">9</span> สมมติฐาน · ความเสี่ยง · คำถามที่ต้องถามเพิ่ม</h2>
 
-  <h3>ฐานการคำนวณ (Basis)</h3>
+  <h3>สมมติฐาน (Assumptions)</h3>
   <ul>
-    <li><strong>1 man-day</strong> = 8 ชั่วโมง · สกุลเงิน บาท (THB) · ยังไม่รวม VAT</li>
-    <li><strong>เรต man-day default 4 ระดับ:</strong> Junior 2,500 · Mid 4,000 · Senior 6,000 · Expert 8,000 บ./วัน</li>
-    <li><strong>Contingency / buffer 20%</strong> (เหตุ: โครงการภาครัฐ requirement ยังไม่นิ่ง + AI/Big Data เป็นงาน R&amp;D)</li>
+    <li>กรมมีระบบ identity กลางสำหรับ SSO พร้อมเอกสาร API ให้เชื่อม</li>
+    <li>โรงพิมพ์/หน่วยงานภายนอกมี API หรือไฟล์รูปแบบมาตรฐานให้ดึงข้อมูลหนังสือ</li>
+    <li>ปริมาณผู้ใช้/ไฟล์ PDF อยู่ในระดับที่ใช้สถาปัตยกรรม cloud มาตรฐานรองรับได้</li>
+    <li>ใช้ design system / component library สำเร็จรูป ไม่ออกแบบ UI จากศูนย์</li>
+    <li>ขอบเขต AI = แนะนำสื่อ/เส้นทางเรียนรู้ ไม่ใช่ train โมเดลเอง (เรียกใช้ผ่าน API)</li>
   </ul>
 
-  <h3>6.1 ประเมินรายโมดูล (Man-day · baseline = Next.js)</h3>
+  <h3>ความเสี่ยง (Risks)</h3>
   <div class="tbl-wrap">
-  <table>
-    <thead><tr><th>กลุ่ม</th><th>รหัส</th><th>โมดูล</th><th class="num">man-day (low)</th><th class="num">man-day (high)</th></tr></thead>
-    <tbody>
-      <tr><td>A</td><td>M-01</td><td>จัดการสิทธิ์ / ผู้ใช้</td><td class="num">6</td><td class="num">10</td></tr>
-      <tr><td>A</td><td>M-02</td><td>จัดการ e-book + viewer + API โรงพิมพ์</td><td class="num">15</td><td class="num">25</td></tr>
-      <tr><td>A</td><td>M-03</td><td>จัดการคำสั่งซื้อ</td><td class="num">10</td><td class="num">16</td></tr>
-      <tr><td>A</td><td>M-04</td><td>ประวัติการสั่งซื้อ</td><td class="num">4</td><td class="num">7</td></tr>
-      <tr><td>A</td><td>M-05</td><td>รายงาน &amp; สถิติ</td><td class="num">8</td><td class="num">14</td></tr>
-      <tr><td>B</td><td>M-06</td><td>SSO</td><td class="num">8</td><td class="num">14</td></tr>
-      <tr><td>B</td><td>M-07</td><td>เชื่อม API ภายนอก</td><td class="num">15</td><td class="num">30</td></tr>
-      <tr><td>C</td><td>M-08</td><td>Big Data pipeline / ETL</td><td class="num">20</td><td class="num">35</td></tr>
-      <tr><td>C</td><td>M-09</td><td>Analytics dashboard</td><td class="num">10</td><td class="num">18</td></tr>
-      <tr><td>D</td><td>M-10</td><td>AI integration + RAG</td><td class="num">18</td><td class="num">30</td></tr>
-      <tr><td>D</td><td>M-11</td><td>Adaptive engine</td><td class="num">20</td><td class="num">35</td></tr>
-      <tr class="total"><td colspan="3">รวมงานพัฒนา (Subtotal)</td><td class="num">134</td><td class="num">234</td></tr>
-    </tbody>
-  </table>
+    <table>
+      <thead><tr><th>ความเสี่ยง</th><th>ผลกระทบ</th><th>โอกาส</th><th>แนวทางรับมือ</th></tr></thead>
+      <tbody>
+        <tr><td>AI/Big Data requirement ยังไม่นิ่ง (R&amp;D)</td><td>สูง</td><td>สูง</td><td>แยกเป็นเฟส 2, ทำ POC ก่อนล็อกราคา</td></tr>
+        <tr><td>จำนวน/ความพร้อมของ API ภายนอก (M-07) ไม่ชัด</td><td>สูง</td><td>กลาง</td><td>ตีราคาเป็นช่วงกว้าง, คิดเป็นรายจุดเชื่อม</td></tr>
+        <tr><td>การจัดซื้อภาครัฐ + เอกสาร/ขั้นตอนเยอะ</td><td>กลาง</td><td>สูง</td><td>เผื่อ buffer PM, วาง milestone ชัด</td></tr>
+        <tr><td>ปริมาณ PDF/ทราฟฟิกโตเกินคาด</td><td>กลาง</td><td>กลาง</td><td>ใช้ object storage + CDN, ออกแบบเผื่อ scale</td></tr>
+      </tbody>
+    </table>
   </div>
 
-  <h3>6.2 งานสนับสนุน (Non-feature Effort)</h3>
-  <div class="tbl-wrap">
-  <table>
-    <thead><tr><th>รายการ</th><th class="num">man-day (low)</th><th class="num">man-day (high)</th></tr></thead>
-    <tbody>
-      <tr><td>วิเคราะห์ / ออกแบบระบบ &amp; UX</td><td class="num">12</td><td class="num">20</td></tr>
-      <tr><td>ทดสอบ (QA / test)</td><td class="num">15</td><td class="num">25</td></tr>
-      <tr><td>ติดตั้ง / ขึ้นระบบ (Deploy / DevOps)</td><td class="num">10</td><td class="num">18</td></tr>
-      <tr><td>จัดการโครงการ (PM)</td><td class="num">12</td><td class="num">20</td></tr>
-      <tr class="total"><td>รวมงานสนับสนุน (Subtotal)</td><td class="num">49</td><td class="num">83</td></tr>
-    </tbody>
-  </table>
-  </div>
+  <h3>คำถามที่ต้องถามลูกค้าเพิ่ม</h3>
+  <ul>
+    <li>จำนวนผู้ใช้/โรงเรียน, ปริมาณ PDF และทราฟฟิกที่คาดไว้?</li>
+    <li>SSO ใช้มาตรฐานอะไร (OIDC/SAML/อื่น ๆ) และมีเอกสารพร้อมหรือยัง?</li>
+    <li>ต้องเชื่อม API ภายนอกกี่ระบบ และระบบไหนพร้อมในเฟสนี้บ้าง?</li>
+    <li>มีข้อมูลเดิมต้อง migrate ไหม ปริมาณเท่าไร รูปแบบใด?</li>
+    <li>ขอบเขต AI Adaptive Learning ที่ต้องการในเฟสแรกแค่ไหน (แนะนำสื่อ / ทำนายผล / chatbot)?</li>
+    <li>งบประมาณกรอบและเดดไลน์ของโครงการ?</li>
+  </ul>
 
-  <h3>6.3 สรุป man-day → ราคา</h3>
-  <div class="tbl-wrap">
-  <table>
-    <thead><tr><th>รายการ</th><th class="num">low</th><th class="num">high</th></tr></thead>
-    <tbody>
-      <tr><td>รวมงานพัฒนา (6.1)</td><td class="num">134</td><td class="num">234</td></tr>
-      <tr><td>รวมงานสนับสนุน (6.2)</td><td class="num">49</td><td class="num">83</td></tr>
-      <tr class="total"><td>รวมย่อย (Subtotal)</td><td class="num">183</td><td class="num">317</td></tr>
-      <tr><td>+ Contingency 20%</td><td class="num">37</td><td class="num">63</td></tr>
-      <tr class="grand"><td>รวม man-day ทั้งสิ้น</td><td class="num">~220</td><td class="num">~380</td></tr>
-    </tbody>
-  </table>
-  </div>
-
-  <h4>ราคา (ก่อน VAT) ตามเรต default 4 ระดับ</h4>
-  <div class="tbl-wrap">
-  <table>
-    <thead><tr><th>เรต man-day</th><th class="num">low (220 md)</th><th class="num">high (380 md)</th></tr></thead>
-    <tbody>
-      <tr><td>Junior · 2,500 บ./วัน</td><td class="num">550,000</td><td class="num">950,000</td></tr>
-      <tr><td>Mid · 4,000 บ./วัน</td><td class="num">880,000</td><td class="num">1,520,000</td></tr>
-      <tr><td>Senior · 6,000 บ./วัน</td><td class="num">1,320,000</td><td class="num">2,280,000</td></tr>
-      <tr><td>Expert · 8,000 บ./วัน</td><td class="num">1,760,000</td><td class="num">3,040,000</td></tr>
-    </tbody>
-  </table>
-  </div>
-
-  <div class="price-hero">
-    <div class="lbl">ช่วงราคารวมทั้งโครงการ (ก่อน VAT)</div>
-    <div class="big">≈ 550,000 – 3,040,000 บาท</div>
-    <div class="sub">ขึ้นกับระดับเรต (Junior–Expert) และขอบเขตสุดท้ายของ AI/Big Data</div>
-  </div>
-
-  <div class="callout tip">
-    <strong>คำแนะนำของเคาะดีญะฮ์ — แบ่งเฟสจะคุ้มและเสี่ยงน้อยกว่า:</strong><br>
-    AI/Big Data (กลุ่ม C–D) เป็นงาน R&amp;D ตีราคา fixed-price แล้วเสี่ยงขาดทุน/บานปลายทั้งสองฝ่าย
-    ฉันเสนอให้แยก:
-    <ul>
-      <li><strong>เฟส 1 — DOLE Book Store (กลุ่ม A, 5 โมดูล):</strong> ~70–115 man-day (รวม support + contingency)
-      → <strong>≈ 175,000–920,000 บาท</strong> (ตามเรต Junior–Expert) ราคาชัดและส่งมอบใช้งานได้จริงก่อน</li>
-      <li><strong>เฟส 2 — SSO / Big Data / AI:</strong> ค่อยตีราคาแม่นเมื่อ requirement นิ่งและตอบ Open Questions ครบ</li>
-    </ul>
-  </div>
-
-  <h4>สิ่งที่ไม่รวมในราคานี้ (Out of Price)</h4>
+  <h3>สิ่งที่ไม่รวมในราคานี้</h3>
   <ul>
     <li>ค่า cloud / hosting / โดเมน</li>
     <li>ค่า license &amp; โทเคน AI รายเดือน (Claude / Gemini / OpenAI)</li>
@@ -449,50 +469,37 @@
   </ul>
 </section>
 
-<!-- ================= SECTION 7 ================= -->
-<section id="assumption">
-  <h2 class="sec-title"><span class="sec-num">7</span> สมมติฐาน · ความเสี่ยง · คำถามที่ต้องถามลูกค้าเพิ่ม</h2>
-  <p class="sec-sub">สิ่งที่ยังไม่ยืนยัน — ตอบครบเมื่อไร ราคาจะแม่นขึ้น</p>
-
-  <h3>สมมติฐาน (Assumptions)</h3>
-  <ul>
-    <li>A-01: กรมมีระบบ identity กลางสำหรับ SSO พร้อมเอกสาร API ให้เชื่อม</li>
-    <li>A-02: โรงพิมพ์/หน่วยงานภายนอกมี API หรือไฟล์รูปแบบมาตรฐานให้ดึงข้อมูลหนังสือ</li>
-    <li>A-03: ปริมาณผู้ใช้/ไฟล์ PDF อยู่ในระดับที่ใช้สถาปัตยกรรม cloud มาตรฐานรองรับได้</li>
-    <li>A-04: ใช้ design system / component library สำเร็จรูป ไม่ออกแบบ UI จากศูนย์</li>
-    <li>A-05: ขอบเขต AI = แนะนำสื่อ/เส้นทางเรียนรู้ ไม่ใช่ train โมเดลเอง (เรียกใช้ผ่าน API)</li>
-  </ul>
-
-  <h3>ความเสี่ยง (Risks)</h3>
-  <div class="tbl-wrap">
-  <table>
-    <thead><tr><th>ความเสี่ยง</th><th>ผลกระทบ</th><th>โอกาส</th><th>แนวทางรับมือ</th></tr></thead>
-    <tbody>
-      <tr><td>AI/Big Data requirement ยังไม่นิ่ง (R&amp;D)</td><td>สูง</td><td>สูง</td><td>แยกเป็นเฟส 2, ทำ POC ก่อนล็อกราคา</td></tr>
-      <tr><td>จำนวน/ความพร้อมของ API ภายนอก (M-07) ไม่ชัด</td><td>สูง</td><td>กลาง</td><td>ตีราคาเป็นช่วงกว้าง, คิดเป็นรายจุดเชื่อม</td></tr>
-      <tr><td>การจัดซื้อภาครัฐ + เอกสาร/ขั้นตอนเยอะ</td><td>กลาง</td><td>สูง</td><td>เผื่อ buffer PM, วาง milestone ชัด</td></tr>
-      <tr><td>ปริมาณ PDF/ทราฟฟิกโตเกินคาด</td><td>กลาง</td><td>กลาง</td><td>ใช้ object storage + CDN, ออกแบบเผื่อ scale</td></tr>
-    </tbody>
-  </table>
-  </div>
-
-  <h3>คำถามที่ต้องถามลูกค้าเพิ่ม (Open Questions)</h3>
-  <ul>
-    <li>Q-01: จำนวนผู้ใช้/โรงเรียน, ปริมาณ PDF และทราฟฟิกที่คาดไว้?</li>
-    <li>Q-02: SSO ใช้มาตรฐานอะไร (OIDC/SAML/อื่น ๆ) และมีเอกสารพร้อมหรือยัง?</li>
-    <li>Q-03: ต้องเชื่อม API ภายนอกกี่ระบบ และระบบไหนพร้อมในเฟสนี้บ้าง?</li>
-    <li>Q-04: มีข้อมูลเดิมต้อง migrate ไหม ปริมาณเท่าไร รูปแบบใด?</li>
-    <li>Q-05: ขอบเขต "AI Adaptive Learning" ที่ต้องการในเฟสแรกแค่ไหน (แนะนำสื่อ / ทำนายผล / chatbot)?</li>
-    <li>Q-06: งบประมาณกรอบและเดดไลน์ของโครงการ?</li>
-  </ul>
-</section>
-
 <footer>
   <p class="sig">จัดทำโดย เคาะดีญะฮ์ — ที่ปรึกษา Presales / Solution Architect</p>
-  <p>เอกสารนี้เป็นการประเมินเบื้องต้น (draft) · ราคาเป็นช่วงและจะแม่นขึ้นเมื่อ requirement นิ่งและตอบ Open Questions ครบ · ราคายังไม่รวม VAT</p>
+  <p>เอกสาร v0.1 (draft) · ช่วงราคา ≈ 550,000 – 3,040,000 บาท · ยังไม่รวม VAT</p>
   <p>"เก็บให้ครบ ตีให้จริง เขียนสมมติฐานให้ชัด" — ราคาที่มั่ว ทำร้ายทุกฝ่าย</p>
 </footer>
 
 </div>
+
+<button id="toTop" aria-label="ขึ้นบนสุด" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
+
+<script>
+(function(){
+  var links = Array.prototype.slice.call(document.querySelectorAll('nav.toc a'));
+  var map = {};
+  links.forEach(function(a){ map[a.getAttribute('href').slice(1)] = a; });
+  var obs = new IntersectionObserver(function(entries){
+    entries.forEach(function(e){
+      if(e.isIntersecting){
+        links.forEach(function(a){ a.classList.remove('active'); });
+        if(map[e.target.id]) map[e.target.id].classList.add('active');
+      }
+    });
+  }, { rootMargin:'-96px 0px -65% 0px', threshold:0 });
+  document.querySelectorAll('section[id]').forEach(function(s){ obs.observe(s); });
+
+  var btn = document.getElementById('toTop');
+  window.addEventListener('scroll', function(){
+    if(window.scrollY > 600) btn.classList.add('show'); else btn.classList.remove('show');
+  }, { passive:true });
+})();
+</script>
+
 </body>
 </html>

@@ -124,6 +124,8 @@ presales/                        ← data เท่านั้น
 2. เลือก **1 โปรเจกต์** ที่ยังไม่ทำ → อ่านเอกสารต้นทางในโฟลเดอร์นั้น
 3. ทำตาม 3 สเตปของฉัน: เก็บ requirement → วิเคราะห์ (ตาม [templates/requirement-analysis.md](templates/requirement-analysis.md)) →
    ตีราคา (ตาม [templates/cost-estimation.md](templates/cost-estimation.md)) — **ไม่ต้องถามเรต man-day**
+   > 📐 **โครงเอกสาร (section + ลำดับ + field) ต้องยึด [templates/document-spec.md](templates/document-spec.md) เป็นแหล่งความจริงเดียว**
+   > ทั้ง `data.json`, `output.html` และเว็บ React ต้องตรงกัน — **ห้าม improvise โครง/หัวข้อ/เนื้อหาเอง**
    ใส่เรต default 4 ระดับลง `rates[]` อัตโนมัติ: Junior 2,500 / Mid 4,000 / Senior 6,000 / Expert 8,000 (บาท/วัน)
    **ยกเว้น** พี่ระบุเรตเองมา → ใช้เฉพาะเรตที่พี่กำหนด (override default) · **สั่งครั้งเดียวจบ ไม่ต้องถามกลับ**
 4. gen `uuid v7` ด้วย snippet นี้ (ไม่ต้องลง dependency):
@@ -135,10 +137,10 @@ presales/                        ← data เท่านั้น
    ```
 5. สร้าง `presales/output/<uuid>/`:
    - `data.json` — ตาม schema (ดูตัวอย่างจริงในโฟลเดอร์ output ที่มีอยู่): `id, projectName, client, date, source, currency,
-     summary{scopeNote,manDayLow,manDayHigh,priceLow,priceHigh}, overview, businessGoal, actors[], scope{in[],out[]},
-     modules[]{group,code,name,desc,complexity,mdLow,mdHigh}, support[]{name,mdLow,mdHigh}, contingencyPct, rates[]{label,rate},
+     summary{scopeNote,manDayLow,manDayHigh,priceLow,priceHigh}, overview, businessGoal, actors[], useCases[]{title,actor,desc}, scope{in[],out[]},
+     modules[]{group,code,name,desc,complexity,mdLow,mdHigh}, nonFunctional[]{key,label,detail}, support[]{name,mdLow,mdHigh}, contingencyPct, rates[]{label,rate},
      groupLegend, timeline{teamAssumption,elapsedNote,stacks[],verdict}, phasing, assumptions[], risks[], openQuestions[], outOfPrice[]`
-   - `output.html` — ใบเสนอ standalone (โทนกลาง ไม่มืด/ไม่สว่างจัด อ้างอิงดีไซน์ของไฟล์เดิม)
+   - `output.html` — ใบเสนอ standalone ที่ **โครงต้องตรงกับ [templates/document-spec.md](templates/document-spec.md) เป๊ะ** (section 1–9 เรียงเหมือน React + สารบัญ sticky + scroll-spy) — **ห้าม improvise โครง/เนื้อหา ทุกอย่างมาจาก data.json**
    - ฟิลด์ `source` ต้อง = `"input/<project-slug>"` เพื่อกันการทำซ้ำ
 6. หน้าเว็บ `/project/<uuid>` ใช้ได้ทันที — route เป็น generic อ่าน data.json อัตโนมัติ **ไม่ต้องแก้โค้ด Next ต่อโปรเจกต์**
 7. **หยุดและรายงานพี่**: ชื่อโปรเจกต์, uuid, ช่วงราคา, path ไฟล์, และ URL `/project/<uuid>` — ไม่ไปทำตัวถัดไปเอง
