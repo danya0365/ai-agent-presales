@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ระบบสะสมแต้ม (Loyalty Points) — เอกสารวิเคราะห์ระบบ & ใบประเมินค่าใช้จ่าย</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&family=Noto+Sans+Thai:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#F4F1EA;
+    --bg2:#EAE6DA;
+    --card:#FBFAF6;
+    --ink:#2D3A3A;
+    --ink-soft:#5C6A68;
+    --teal:#3E7C76;
+    --teal-dark:#2F605B;
+    --amber:#C98A3B;
+    --amber-soft:#F0E2CC;
+    --line:#DED8C8;
+    --green:#4F7A52;
+    --green-bg:#E5EEE2;
+    --yellow-bg:#F6ECCF;
+    --red:#A8543F;
+    --red-bg:#F2E0D8;
+    --shadow:0 4px 14px rgba(45,58,58,.08);
+    --shadow-lg:0 10px 30px rgba(45,58,58,.12);
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;font-family:'Sarabun','Noto Sans Thai',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+    background:var(--bg);color:var(--ink);line-height:1.65;font-size:16px;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:1040px;margin:0 auto;padding:0 20px 80px;}
+
+  /* ---------- Header ---------- */
+  header.hero{
+    background:linear-gradient(135deg,var(--teal-dark),var(--teal));
+    color:#F4F1EA;padding:48px 20px 40px;text-align:center;
+    border-bottom:6px solid var(--amber);
+  }
+  header.hero .kicker{
+    display:inline-block;letter-spacing:2px;font-size:.8rem;text-transform:uppercase;
+    background:rgba(255,255,255,.15);padding:5px 14px;border-radius:20px;margin-bottom:14px;
+  }
+  header.hero h1{margin:0 0 8px;font-size:2rem;font-weight:700;letter-spacing:.5px;}
+  header.hero p{margin:4px 0;opacity:.92;font-size:1.02rem;}
+  .meta-row{
+    display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin-top:20px;
+  }
+  .meta-row span{
+    background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.25);
+    padding:6px 14px;border-radius:8px;font-size:.85rem;
+  }
+
+  /* ---------- TOC: sticky / pin ---------- */
+  nav.toc{
+    position:sticky;top:0;z-index:50;
+    background:rgba(251,250,246,.95);backdrop-filter:blur(6px);
+    border-bottom:1px solid var(--line);box-shadow:var(--shadow);
+  }
+  nav.toc .toc-inner{
+    max-width:1040px;margin:0 auto;padding:10px 20px;
+    display:flex;align-items:center;gap:6px;overflow-x:auto;white-space:nowrap;
+    -ms-overflow-style:none;scrollbar-width:none;
+  }
+  nav.toc .toc-inner::-webkit-scrollbar{display:none;}
+  nav.toc strong{color:var(--teal-dark);font-size:.78rem;text-transform:uppercase;letter-spacing:1px;flex:0 0 auto;margin-right:6px;}
+  nav.toc a{flex:0 0 auto;color:var(--ink);text-decoration:none;font-size:.9rem;font-weight:500;padding:4px 12px;border-radius:20px;transition:background .15s,color .15s;}
+  nav.toc a:hover{background:var(--bg2);}
+  nav.toc a.active{background:var(--teal);color:#fff;}
+
+  /* ---------- Back to top ---------- */
+  #toTop{
+    position:fixed;bottom:24px;right:24px;z-index:60;display:none;
+    width:44px;height:44px;border:none;border-radius:50%;cursor:pointer;
+    background:var(--teal-dark);color:#fff;font-size:1.2rem;box-shadow:var(--shadow-lg);
+  }
+  #toTop:hover{background:var(--teal);}
+  #toTop.show{display:block;}
+
+  /* ---------- Sections ---------- */
+  section{
+    background:var(--card);border:1px solid var(--line);border-radius:16px;
+    padding:30px 32px;margin-bottom:28px;box-shadow:var(--shadow);scroll-margin-top:64px;
+  }
+  .sec-num{
+    display:inline-flex;align-items:center;justify-content:center;
+    width:38px;height:38px;border-radius:10px;background:var(--teal);color:#fff;
+    font-weight:700;font-size:1.05rem;margin-right:12px;flex:0 0 auto;
+  }
+  h2.sec-title{display:flex;align-items:center;font-size:1.5rem;margin:0 0 6px;color:var(--teal-dark);font-weight:700;}
+  .sec-sub{color:var(--ink-soft);margin:0 0 22px 50px;font-size:.98rem;}
+  h3{color:var(--teal-dark);font-size:1.15rem;margin:26px 0 12px;border-left:4px solid var(--amber);padding-left:12px;}
+  h4{color:var(--ink);font-size:1.02rem;margin:18px 0 8px;}
+  p{margin:8px 0;}
+  ul{margin:8px 0 8px;padding-left:22px;}
+  li{margin:5px 0;}
+
+  /* ---------- Tables ---------- */
+  .tbl-wrap{overflow-x:auto;margin:14px 0;}
+  table{width:100%;border-collapse:collapse;font-size:.95rem;background:#fff;border-radius:10px;overflow:hidden;}
+  thead th{background:var(--teal-dark);color:#fff;text-align:left;padding:11px 14px;font-weight:600;font-size:.92rem;}
+  tbody td{padding:10px 14px;border-bottom:1px solid var(--line);vertical-align:top;}
+  tbody tr:nth-child(even){background:#F7F4EC;}
+  tbody tr:hover{background:var(--amber-soft);}
+  td.num,th.num{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap;}
+  tr.total td{background:var(--bg2)!important;font-weight:700;color:var(--teal-dark);border-top:2px solid var(--teal);}
+  tr.grand td{background:var(--teal);color:#fff;font-weight:700;font-size:1rem;}
+
+  /* ---------- Badges / pills ---------- */
+  .badge{display:inline-block;padding:2px 10px;border-radius:20px;font-size:.78rem;font-weight:600;white-space:nowrap;}
+  .b-low{background:var(--green-bg);color:var(--green);}
+  .b-mid{background:var(--yellow-bg);color:var(--amber);}
+  .b-high{background:var(--red-bg);color:var(--red);}
+  .grp{display:inline-block;width:24px;height:24px;line-height:24px;text-align:center;border-radius:6px;background:var(--amber);color:#fff;font-weight:700;font-size:.85rem;}
+
+  /* ---------- Scope columns ---------- */
+  .two-col{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin:14px 0;}
+  .scope-box{border-radius:12px;padding:16px 18px;border:1px solid var(--line);}
+  .scope-in{background:var(--green-bg);border-color:#bcd3b8;}
+  .scope-out{background:var(--red-bg);border-color:#e3c4b8;}
+  .scope-box h4{margin-top:0;}
+  .scope-in h4{color:var(--green);}
+  .scope-out h4{color:var(--red);}
+
+  /* ---------- Use case cards ---------- */
+  .uc-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:14px 0;}
+  .uc-card{background:#fff;border:1px solid var(--line);border-radius:12px;padding:16px;}
+  .uc-card .uc-title{font-weight:600;color:var(--teal-dark);}
+  .uc-card .uc-actor{font-size:.78rem;color:var(--amber);font-weight:600;margin-top:2px;}
+  .uc-card .uc-desc{font-size:.9rem;color:var(--ink-soft);margin-top:6px;}
+
+  /* ---------- Callout ---------- */
+  .callout{border-radius:12px;padding:16px 20px;margin:18px 0;border-left:5px solid var(--amber);background:var(--yellow-bg);}
+  .callout.tip{border-left-color:var(--teal);background:var(--green-bg);}
+  .callout strong{color:var(--teal-dark);}
+
+  /* ---------- Price hero ---------- */
+  .price-hero{
+    background:linear-gradient(135deg,var(--amber),#B5762E);color:#fff;
+    border-radius:16px;padding:26px 28px;margin:22px 0 28px;text-align:center;box-shadow:var(--shadow-lg);
+  }
+  .price-hero .lbl{font-size:.95rem;opacity:.9;letter-spacing:1px;text-transform:uppercase;}
+  .price-hero .big{font-size:2.1rem;font-weight:700;margin:6px 0;}
+  .price-hero .sub{font-size:.9rem;opacity:.9;}
+
+  /* ---------- Stat cards ---------- */
+  .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:14px;margin:18px 0;}
+  .stat{background:#fff;border:1px solid var(--line);border-radius:12px;padding:16px;text-align:center;}
+  .stat .v{font-size:1.5rem;font-weight:700;color:var(--teal);}
+  .stat .k{font-size:.85rem;color:var(--ink-soft);margin-top:2px;}
+
+  /* ---------- Stack compare ---------- */
+  .stack-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin:16px 0;}
+  .stack-card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:20px;border-top:5px solid var(--teal);}
+  .stack-card.laravel{border-top-color:var(--amber);}
+  .stack-card h4{margin-top:0;font-size:1.2rem;}
+  .stack-card .tname{color:var(--teal-dark);}
+  .stack-card.laravel .tname{color:var(--amber);}
+  .pros li::marker{content:"✓  ";color:var(--green);font-weight:700;}
+  .cons li::marker{content:"–  ";color:var(--red);font-weight:700;}
+
+  footer{text-align:center;color:var(--ink-soft);font-size:.88rem;margin-top:40px;padding-top:20px;border-top:1px solid var(--line);}
+  .sig{font-weight:600;color:var(--teal-dark);}
+
+  @media(max-width:720px){
+    .two-col,.stack-grid,.uc-grid{grid-template-columns:1fr;}
+    header.hero h1{font-size:1.5rem;}
+    section{padding:22px 18px;}
+    .sec-sub{margin-left:0;}
+  }
+  @media print{
+    body{background:#fff;font-size:12px;}
+    nav.toc,#toTop{display:none;}
+    section{box-shadow:none;border:1px solid #ccc;break-inside:avoid;}
+    header.hero{background:var(--teal-dark)!important;-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+    thead th,tr.grand td,.price-hero{-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+  }
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <span class="kicker">Presales · Solution Analysis</span>
+  <h1>ระบบสะสมแต้ม (Loyalty Points) — Multi-tenant SaaS</h1>
+  <p>โปรแกรมสะสมแต้มหน้าร้านหลายแบรนด์บนแพลตฟอร์มเดียว · Tier · แคมเปญ · Referral</p>
+  <div class="meta-row">
+    <span>📅 วันที่: 2026-06-20</span>
+    <span>✍️ จัดทำโดย: เคาะดีญะฮ์ (Presales / Solution Architect)</span>
+    <span>📄 เวอร์ชัน: v0.1 (draft)</span>
+  </div>
+</header>
+
+<!-- สารบัญ sticky/pin + scroll-spy -->
+<nav class="toc">
+  <div class="toc-inner">
+    <strong>สารบัญ</strong>
+    <a href="#overview">1. ภาพรวม</a>
+    <a href="#scope">2. ขอบเขตงาน</a>
+    <a href="#actors">3. ผู้ใช้ &amp; บทบาท</a>
+    <a href="#usecases">4. Use Case</a>
+    <a href="#modules">5. โมดูล &amp; man-day</a>
+    <a href="#nonfunc">6. Non-functional</a>
+    <a href="#timeline">7. Timeline &amp; Stack</a>
+    <a href="#cost">8. ค่าใช้จ่าย &amp; ราคา</a>
+    <a href="#notes">9. สมมติฐาน &amp; ความเสี่ยง</a>
+  </div>
+</nav>
+
+<div class="wrap">
+
+<!-- Price hero -->
+<div class="price-hero">
+  <div class="lbl">ช่วงราคารวมทั้งโครงการ (ก่อน VAT)</div>
+  <div class="big">≈ 345,000 – 1,856,000 บาท</div>
+  <div class="sub">ระบบสะสมแต้มหน้าร้าน multi-tenant + Tier + แคมเปญ + Referral · ขึ้นกับระดับเรต (Junior–Expert)</div>
+</div>
+
+<!-- ================= SECTION 1 ================= -->
+<section id="overview">
+  <h2 class="sec-title"><span class="sec-num">1</span> ภาพรวม &amp; เป้าหมายธุรกิจ</h2>
+  <p class="sec-sub">แพลตฟอร์มสะสมแต้มหน้าร้านแบบหลายแบรนด์ (SaaS) — พนักงานทำงานผ่าน Staff Terminal ลูกค้าระบุตัวด้วยเบอร์</p>
+  <p>แพลตฟอร์มสะสมแต้มแบบ multi-tenant (SaaS) ที่ให้หลายแบรนด์/ร้านเปิดใช้บนระบบเดียว แต่ละแบรนด์ตั้งกฎสะสมแต้ม
+  รางวัล ระดับสมาชิก และแคมเปญของตัวเองได้ การสะสม/แลกแต้มทั้งหมดทำที่หน้าร้านผ่าน Staff Terminal (เว็บ responsive) —
+  พนักงานค้นหา/สมัครสมาชิกด้วยเบอร์โทร บันทึกยอดซื้อเพื่อคำนวณแต้ม และแลกรางวัลให้ลูกค้า ลูกค้าปลายทางไม่มีหน้าใช้เอง
+  รองรับ Tier, แคมเปญแต้มคูณ และแนะนำเพื่อน · เริ่มแบบ standalone ยังไม่ต่อ POS/payment เดิม</p>
+  <ul>
+    <li><strong>ปัญหาที่แก้:</strong> ให้หลายแบรนด์ทำโปรแกรมสะสมแต้ม/ลอยัลตี้หน้าร้านได้เองบนระบบเดียว โดยไม่ต้องลงทุนระบบสมาชิกแยกของใครของมัน พนักงานใช้งานง่ายจบในจอเดียว ลูกค้ากลับมาซื้อซ้ำเพราะมีแต้ม/รางวัล/ระดับสมาชิก และแบรนด์มีข้อมูลพฤติกรรมไว้ทำการตลาด</li>
+    <li><strong>ตัววัดความสำเร็จ:</strong> จำนวนสมาชิก active, อัตราการกลับมาซื้อซ้ำ (repeat rate), แต้มที่ออก/ถูกแลก (redemption rate), จำนวนสมาชิกที่เลื่อน tier, จำนวนสมาชิกที่มาจาก referral, จำนวนแบรนด์ที่ใช้งานจริง</li>
+  </ul>
+  <div class="stats">
+    <div class="stat"><div class="v">138–232</div><div class="k">man-day รวม</div></div>
+    <div class="stat"><div class="v">11</div><div class="k">โมดูลพัฒนา</div></div>
+    <div class="stat"><div class="v">20%</div><div class="k">Contingency</div></div>
+    <div class="stat"><div class="v">4 ระดับ</div><div class="k">เรตที่ใช้</div></div>
+  </div>
+</section>
+
+<!-- ================= SECTION 2 ================= -->
+<section id="scope">
+  <h2 class="sec-title"><span class="sec-num">2</span> ขอบเขตงาน (Scope)</h2>
+  <p class="sec-sub">แยก in/out ให้ชัด — กันงานบานปลายและความเข้าใจผิดเรื่องราคา</p>
+  <div class="two-col">
+    <div class="scope-box scope-in">
+      <h4>✅ อยู่ในขอบเขต</h4>
+      <ul>
+        <li>ระบบ multi-tenant: สมัคร/เปิด-ปิดแบรนด์, จัดการสาขา, แยกข้อมูลแต่ละแบรนด์ (tenant isolation)</li>
+        <li>Auth &amp; สิทธิ์ฝั่งแบรนด์ (เจ้าของ / พนักงาน) + Platform Admin</li>
+        <li>ทะเบียนสมาชิก: สมัคร/ค้นหาด้วยเบอร์โทร, โปรไฟล์, ประวัติแต้ม/การแลก (กันสมาชิกซ้ำ)</li>
+        <li>เครื่องมือสะสมแต้ม (Points Engine): กฎ earn ตามยอดซื้อ, บันทึกยอดซื้อ (คีย์มือ), points ledger, ปรับแต้มมือ, หมดอายุแต้ม</li>
+        <li>แลกรางวัล + คลังรางวัล/สต็อก (ตัดแต้ม-ตัดสต็อก, ประวัติการแลก)</li>
+        <li>Staff Terminal หน้าร้าน (เว็บ responsive): ค้น/สมัครสมาชิก, สะสม, แลก จบในจอเดียว</li>
+        <li>ระดับสมาชิก (Tier): เกณฑ์เลื่อน/ตกชั้น, ตัวคูณแต้ม, สิทธิ์ต่อ tier</li>
+        <li>โปรโมชัน/แคมเปญ: แต้มคูณ x2, แต้มโบนัสตามช่วงเวลา/สินค้า/วันเกิด, เงื่อนไขแคมเปญ</li>
+        <li>แนะนำเพื่อน (Referral): รหัส/เบอร์ผู้แนะนำ, ให้แต้มทั้งสองฝ่าย, กันโกง</li>
+        <li>Dashboard &amp; รายงานฝั่งแบรนด์ + Dashboard ฝั่ง Platform Admin</li>
+      </ul>
+    </div>
+    <div class="scope-box scope-out">
+      <h4>⛔ อยู่นอกขอบเขต</h4>
+      <ul>
+        <li>หน้า/แอป self-service ฝั่งลูกค้า (ดูแต้มเอง, แลกเอง ผ่าน LINE/เว็บ/มือถือ) — ทำผ่านพนักงานเท่านั้น</li>
+        <li>เชื่อม POS / payment / ERP / CRM เดิมของร้าน (คีย์ยอดซื้อมือในเฟสนี้)</li>
+        <li>ระบบเก็บค่าบริการแบรนด์ (billing/subscription) &amp; ชำระเงิน — เสนอแยกเมื่อยืนยันโมเดลรายได้</li>
+        <li>แจ้งเตือนภายนอก (SMS/LINE/Email) — เสนอแยกเมื่อต้องการ</li>
+        <li>การออกบัตรสมาชิกจริง/บัตรพลาสติก, การพิมพ์การ์ด</li>
+        <li>เนื้อหา/รูปรางวัล &amp; สื่อการตลาด (แบรนด์จัดเตรียมเอง)</li>
+        <li>ค่า cloud/hosting/โดเมน และงานดูแลหลังส่งมอบ (เสนอแยก)</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ================= SECTION 3 ================= -->
+<section id="actors">
+  <h2 class="sec-title"><span class="sec-num">3</span> ผู้ใช้ &amp; บทบาท (Actors)</h2>
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>บทบาท</th><th>ทำอะไรได้</th></tr></thead>
+      <tbody>
+        <tr><td>ลูกค้า / สมาชิก (หน้าร้าน)</td><td>ระบุตัวด้วยเบอร์โทรที่หน้าร้าน, สะสมแต้มจากยอดซื้อ, แลกรางวัล, เลื่อนระดับสมาชิก, รับแต้มจากแคมเปญ/การถูกแนะนำ — ทั้งหมดทำผ่านพนักงาน (ไม่มี self-service)</td></tr>
+        <tr><td>พนักงานหน้าร้าน (Staff)</td><td>ค้นหา/สมัครสมาชิกด้วยเบอร์, บันทึกยอดซื้อเพื่อสะสมแต้ม, แลกรางวัล, กรอกรหัส/เบอร์ผู้แนะนำตอนสมัคร, ดูแต้ม/tier/ประวัติของสมาชิก — ผ่าน Staff Terminal</td></tr>
+        <tr><td>เจ้าของแบรนด์ / ร้าน (Merchant)</td><td>ตั้งกฎสะสมแต้ม &amp; เงื่อนไขหมดอายุ, จัดการคลังรางวัล, ตั้ง Tier &amp; สิทธิ์, สร้างแคมเปญ/โปรโมชัน, ตั้งกติกา referral, จัดการสาขา/พนักงาน, ดูรายงานแบรนด์</td></tr>
+        <tr><td>ผู้ดูแลแพลตฟอร์ม (Platform Admin)</td><td>อนุมัติ/เปิด-ปิดแบรนด์ (tenant), ดูภาพรวมการใช้งานทุกแบรนด์, จัดการสิทธิ์ระดับแพลตฟอร์ม</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ================= SECTION 4 ================= -->
+<section id="usecases">
+  <h2 class="sec-title"><span class="sec-num">4</span> Use Case หลัก</h2>
+  <div class="uc-grid">
+    <div class="uc-card"><div class="uc-title">สมัคร &amp; เปิดแบรนด์ (onboarding)</div><div class="uc-actor">เจ้าของแบรนด์ / ร้าน (Merchant)</div><div class="uc-desc">สมัครเปิดแบรนด์ ตั้งโปรไฟล์/สาขา รอแอดมินอนุมัติ แล้วตั้งกฎแต้ม/รางวัลเริ่มใช้งาน</div></div>
+    <div class="uc-card"><div class="uc-title">ตั้งกฎสะสมแต้ม &amp; คลังรางวัล</div><div class="uc-actor">เจ้าของแบรนด์ / ร้าน (Merchant)</div><div class="uc-desc">กำหนดอัตราแต้ม (ซื้อครบ X บาท = Y แต้ม), เงื่อนไขหมดอายุแต้ม, สร้างรายการรางวัลและจำนวนสต็อก</div></div>
+    <div class="uc-card"><div class="uc-title">ตั้งระดับสมาชิก (Tier) &amp; แคมเปญ</div><div class="uc-actor">เจ้าของแบรนด์ / ร้าน (Merchant)</div><div class="uc-desc">กำหนดเกณฑ์เลื่อน/ตกชั้น, ตัวคูณแต้มต่อ tier, จัดแคมเปญแต้มคูณ/โบนัสตามช่วงเวลา/สินค้า/วันเกิด</div></div>
+    <div class="uc-card"><div class="uc-title">สมัครสมาชิกใหม่หน้าร้าน + ผู้แนะนำ</div><div class="uc-actor">พนักงานหน้าร้าน (Staff)</div><div class="uc-desc">พนักงานสมัครสมาชิกด้วยเบอร์โทร เก็บข้อมูลขั้นต่ำ + consent PDPA และกรอกรหัส/เบอร์ผู้แนะนำ (ถ้ามี) เพื่อให้แต้ม referral</div></div>
+    <div class="uc-card"><div class="uc-title">บันทึกยอดซื้อ → สะสมแต้ม</div><div class="uc-actor">พนักงานหน้าร้าน (Staff)</div><div class="uc-desc">พนักงานค้นสมาชิกด้วยเบอร์ คีย์ยอดซื้อ ระบบคำนวณแต้มตามกฎ + ตัวคูณ tier/แคมเปญ แล้วบันทึกลง ledger</div></div>
+    <div class="uc-card"><div class="uc-title">แลกรางวัล</div><div class="uc-actor">พนักงานหน้าร้าน (Staff)</div><div class="uc-desc">เลือกรางวัลจาก catalog ระบบตรวจแต้มคงเหลือ ตัดแต้ม-ตัดสต็อก และบันทึกประวัติการแลก</div></div>
+    <div class="uc-card"><div class="uc-title">เลื่อนระดับสมาชิก &amp; รับสิทธิ์ Tier</div><div class="uc-actor">ลูกค้า / สมาชิก (หน้าร้าน)</div><div class="uc-desc">ระบบประเมินยอดสะสม/เงื่อนไข เลื่อน/ตกชั้นอัตโนมัติ และใช้ตัวคูณแต้ม/สิทธิ์ตาม tier ในการสะสมครั้งถัดไป</div></div>
+    <div class="uc-card"><div class="uc-title">ดูรายงานแบรนด์</div><div class="uc-actor">เจ้าของแบรนด์ / ร้าน (Merchant)</div><div class="uc-desc">ดูสมาชิก active, แต้มออก/แลก, redemption rate, การกระจาย tier, ผลแคมเปญ และยอด referral</div></div>
+    <div class="uc-card"><div class="uc-title">จัดการแบรนด์ &amp; ภาพรวมแพลตฟอร์ม</div><div class="uc-actor">ผู้ดูแลแพลตฟอร์ม (Platform Admin)</div><div class="uc-desc">อนุมัติ/เปิด-ปิดแบรนด์ ดูการใช้งานรวมทุก tenant และจัดการสิทธิ์ระดับแพลตฟอร์ม</div></div>
+  </div>
+</section>
+
+<!-- ================= SECTION 5 ================= -->
+<section id="modules">
+  <h2 class="sec-title"><span class="sec-num">5</span> โมดูล &amp; ประเมิน man-day</h2>
+  <p class="sec-sub">ฐานของการตีราคา — แตกเป็น 11 โมดูล 4 กลุ่ม · man-day เป็นช่วง low–high</p>
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>กลุ่ม</th><th>รหัส</th><th>โมดูล</th><th>ความซับซ้อน</th><th class="num">md low</th><th class="num">md high</th></tr></thead>
+      <tbody>
+        <tr><td><span class="grp">A</span></td><td>M-01</td><td><strong>จัดการแบรนด์ / Tenant &amp; Onboarding</strong><br><span style="font-size:.85rem;color:var(--ink-soft)">สมัครแบรนด์, โปรไฟล์, จัดการสาขา, อนุมัติ, เปิด/ปิด, สถานะ active/suspended, แยกข้อมูลแต่ละแบรนด์ (tenant isolation)</span></td><td><span class="badge b-mid">medium-high</span></td><td class="num">8</td><td class="num">14</td></tr>
+        <tr><td><span class="grp">A</span></td><td>M-02</td><td><strong>Auth &amp; สิทธิ์ (เจ้าของ/พนักงาน/แอดมิน)</strong><br><span style="font-size:.85rem;color:var(--ink-soft)">login, role owner/staff/platform-admin, จัดการพนักงานต่อสาขา, สิทธิ์การปรับแต้ม</span></td><td><span class="badge b-mid">medium</span></td><td class="num">5</td><td class="num">9</td></tr>
+        <tr><td><span class="grp">B</span></td><td>M-03</td><td><strong>ทะเบียนสมาชิก (Member)</strong><br><span style="font-size:.85rem;color:var(--ink-soft)">สมัคร/ค้นหาด้วยเบอร์โทร, โปรไฟล์ขั้นต่ำ + consent PDPA, ประวัติแต้ม/การแลก, กันสมาชิกซ้ำ (dedupe เบอร์), merge สมาชิก</span></td><td><span class="badge b-mid">medium-high</span></td><td class="num">7</td><td class="num">12</td></tr>
+        <tr><td><span class="grp">B</span></td><td>M-04</td><td><strong>เครื่องมือสะสมแต้ม (Points Engine)</strong><br><span style="font-size:.85rem;color:var(--ink-soft)">กฎ earn ตามยอดซื้อ (config-driven), บันทึกยอดซื้อคีย์มือ, คำนวณแต้ม + ตัวคูณ tier/แคมเปญ, points ledger ตรวจย้อนได้, ปรับแต้มมือ (มี log), งานหมดอายุแต้ม</span></td><td><span class="badge b-high">high</span></td><td class="num">12</td><td class="num">20</td></tr>
+        <tr><td><span class="grp">B</span></td><td>M-05</td><td><strong>แลกรางวัล + คลังรางวัล</strong><br><span style="font-size:.85rem;color:var(--ink-soft)">catalog รางวัล, จำนวนสต็อก, เงื่อนไขแลก, ตรวจแต้มคงเหลือ, ตัดแต้ม-ตัดสต็อก (idempotent), ประวัติการแลก</span></td><td><span class="badge b-mid">medium-high</span></td><td class="num">8</td><td class="num">13</td></tr>
+        <tr><td><span class="grp">B</span></td><td>M-06</td><td><strong>Staff Terminal หน้าร้าน</strong><br><span style="font-size:.85rem;color:var(--ink-soft)">หน้าจอพนักงาน (เว็บ responsive): ค้น/สมัครสมาชิก, บันทึกยอดซื้อ, แลกรางวัล, ดูแต้ม/tier/ประวัติ — จบในจอเดียว ใช้งานเร็วหน้าร้าน</span></td><td><span class="badge b-mid">medium-high</span></td><td class="num">8</td><td class="num">13</td></tr>
+        <tr><td><span class="grp">C</span></td><td>M-07</td><td><strong>ระดับสมาชิก (Tier)</strong><br><span style="font-size:.85rem;color:var(--ink-soft)">นิยาม tier, เกณฑ์เลื่อน/ตกชั้น (ตามยอด/แต้มสะสมในช่วงเวลา), ตัวคูณแต้มต่อ tier, สิทธิ์/รางวัลเฉพาะ tier, งานประเมินเลื่อนชั้นอัตโนมัติ</span></td><td><span class="badge b-mid">medium-high</span></td><td class="num">8</td><td class="num">13</td></tr>
+        <tr><td><span class="grp">C</span></td><td>M-08</td><td><strong>โปรโมชัน / แคมเปญ</strong><br><span style="font-size:.85rem;color:var(--ink-soft)">เอนจินแต้มคูณ/โบนัส: x2 ตามช่วงเวลา, โบนัสตามสินค้า/หมวด, แต้มวันเกิด, เงื่อนไข &amp; ลำดับการคิดแต้มเมื่อมีหลายแคมเปญพร้อมกัน</span></td><td><span class="badge b-high">high</span></td><td class="num">10</td><td class="num">16</td></tr>
+        <tr><td><span class="grp">C</span></td><td>M-09</td><td><strong>แนะนำเพื่อน (Referral)</strong><br><span style="font-size:.85rem;color:var(--ink-soft)">รหัส/เบอร์ผู้แนะนำตอนสมัคร, ให้แต้มทั้งผู้แนะนำ+ผู้ถูกแนะนำตามกติกา, เงื่อนไขปลดแต้ม, กันโกง (สมัครซ้ำเอาแต้ม)</span></td><td><span class="badge b-mid">medium</span></td><td class="num">6</td><td class="num">10</td></tr>
+        <tr><td><span class="grp">D</span></td><td>M-10</td><td><strong>Dashboard &amp; รายงานแบรนด์</strong><br><span style="font-size:.85rem;color:var(--ink-soft)">สมาชิก active, แต้มออก/แลก, redemption rate, การกระจาย tier, ผลแคมเปญ, ยอด referral, รางวัลคงเหลือ</span></td><td><span class="badge b-mid">medium</span></td><td class="num">6</td><td class="num">10</td></tr>
+        <tr><td><span class="grp">D</span></td><td>M-11</td><td><strong>Dashboard ผู้ดูแลแพลตฟอร์ม</strong><br><span style="font-size:.85rem;color:var(--ink-soft)">รายชื่อแบรนด์ทั้งหมด, สถานะ, ภาพรวมการใช้งานรวมทุก tenant, จัดการสิทธิ์ระดับแพลตฟอร์ม</span></td><td><span class="badge b-mid">medium</span></td><td class="num">5</td><td class="num">9</td></tr>
+        <tr class="total"><td colspan="4">รวมงานพัฒนา (Subtotal)</td><td class="num">83</td><td class="num">139</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p style="font-size:.85rem;color:var(--ink-soft)"><strong>A</strong> Platform &amp; Tenant &nbsp; <strong>B</strong> Member &amp; Points Engine &nbsp; <strong>C</strong> Engagement (Tier / Campaign / Referral) &nbsp; <strong>D</strong> Dashboard &amp; Report</p>
+</section>
+
+<!-- ================= SECTION 6 ================= -->
+<section id="nonfunc">
+  <h2 class="sec-title"><span class="sec-num">6</span> ความต้องการ Non-functional</h2>
+  <p class="sec-sub">สิ่งที่ลูกค้ามักไม่พูด แต่กระทบราคามากที่สุด</p>
+  <div class="stats">
+    <div class="stat"><div class="v">Multi-tenant</div><div class="k">แยกข้อมูลแต่ละแบรนด์ปลอดภัย (tenant isolation)</div></div>
+    <div class="stat"><div class="v">Points Ledger</div><div class="k">แต้มถูกต้อง ตรวจย้อนได้ (auditable) ปรับแต้มมีร่องรอย</div></div>
+    <div class="stat"><div class="v">กันโกง</div><div class="k">กันแต้ม/referral ปลอม, dedupe สมาชิก, ปรับแต้มตามสิทธิ์</div></div>
+    <div class="stat"><div class="v">Performance</div><div class="k">ค้นสมาชิก/คิดแต้มเร็วหน้าร้าน (พนักงานใช้ตอนคิวยาว)</div></div>
+    <div class="stat"><div class="v">PWA/Responsive</div><div class="k">Staff Terminal ใช้บนมือถือ/แท็บเล็ตลื่น</div></div>
+    <div class="stat"><div class="v">ภาษาไทย</div><div class="k">UI/รายงานภาษาไทยเป็นหลัก</div></div>
+    <div class="stat"><div class="v">PDPA</div><div class="k">เก็บข้อมูลสมาชิกเท่าที่จำเป็น + consent หน้าร้าน</div></div>
+    <div class="stat"><div class="v">Backup</div><div class="k">uptime + สำรองข้อมูล (หลายแบรนด์พึ่งพา)</div></div>
+  </div>
+</section>
+
+<!-- ================= SECTION 7 ================= -->
+<section id="timeline">
+  <h2 class="sec-title"><span class="sec-num">7</span> Timeline &amp; เปรียบเทียบ Stack</h2>
+  <p class="sec-sub">ทีม freelance 2–3 คน (full-stack 2 + PM/QA แชร์ · ~2 effective heads)</p>
+  <p>Effort รวม ~138–232 man-day → ระยะเวลาจริงราว 4–7 เดือน</p>
+  <div class="stack-grid">
+    <div class="stack-card laravel">
+      <h4 class="tname">▲ Laravel (PHP) + Filament</h4>
+      <p style="font-size:.9rem;color:var(--ink-soft)">⏱ ~4–6 เดือน</p>
+      <ul class="pros">
+        <li>งานนี้เป็น admin/CRUD + รายงานเป็นหลัก (ไม่มี self-service ลูกค้า) — Filament scaffold กลุ่ม A/C/D ได้เปรียบมาก</li>
+        <li>เหมาะ multi-tenant + report + points ledger</li>
+        <li>หา dev ไทยง่าย</li>
+      </ul>
+      <ul class="cons"><li>Staff Terminal ต้องทำ frontend ให้ลื่นเองบ้าง</li></ul>
+    </div>
+    <div class="stack-card">
+      <h4 class="tname">▲ Next.js (React/TS)</h4>
+      <p style="font-size:.9rem;color:var(--ink-soft)">⏱ ~4.5–7 เดือน</p>
+      <ul class="pros">
+        <li>Staff Terminal เป็น PWA ลื่น ใช้หน้าร้านดี</li>
+        <li>UX มือถือ/แท็บเล็ตทันสมัย</li>
+        <li>ecosystem JS เดียวจบ</li>
+      </ul>
+      <ul class="cons"><li>งาน admin/รายงาน/แคมเปญ CRUD ต้องประกอบเองมากกว่า — เสียเวลากลุ่ม A/C/D</li></ul>
+    </div>
+  </div>
+  <div class="callout tip"><strong>สรุป:</strong> งานนี้น้ำหนักไปทางจัดการ/รายงาน (A/C/D) เพราะไม่มีหน้า self-service ลูกค้า — Laravel + Filament ได้เปรียบด้าน time-to-market ชัดกว่า coupon ที่มี PWA ลูกค้า · ถ้าทีมถนัด JS ใช้ Next.js ก็ได้ แต่ต้องเผื่อเวลากลุ่ม admin มากขึ้น</div>
+</section>
+
+<!-- ================= SECTION 8 ================= -->
+<section id="cost">
+  <h2 class="sec-title"><span class="sec-num">8</span> ค่าใช้จ่าย &amp; ราคา</h2>
+  <p class="sec-sub">ทุกตัวเลขมีที่มา: ราคา ← man-day ← module</p>
+
+  <h3>งานสนับสนุน (non-feature)</h3>
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>งานสนับสนุน</th><th class="num">md low</th><th class="num">md high</th></tr></thead>
+      <tbody>
+        <tr><td>วิเคราะห์ / ออกแบบระบบ &amp; UX (Staff Terminal เน้น UX หน้าร้าน)</td><td class="num">8</td><td class="num">14</td></tr>
+        <tr><td>ทดสอบ (QA / test — เน้น engine แต้ม/tier/แคมเปญ)</td><td class="num">9</td><td class="num">15</td></tr>
+        <tr><td>ติดตั้ง / ขึ้นระบบ (Deploy / DevOps · multi-tenant)</td><td class="num">7</td><td class="num">12</td></tr>
+        <tr><td>จัดการโครงการ (PM)</td><td class="num">8</td><td class="num">13</td></tr>
+        <tr class="total"><td>รวมงานสนับสนุน</td><td class="num">32</td><td class="num">54</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>สรุป man-day → ราคา</h3>
+  <div class="tbl-wrap">
+    <table>
+      <tbody>
+        <tr><td>รวมย่อย (dev + support)</td><td class="num">115</td><td class="num">193</td></tr>
+        <tr><td>+ Contingency 20%</td><td class="num">23</td><td class="num">39</td></tr>
+        <tr class="grand"><td>รวม man-day ทั้งสิ้น</td><td class="num">~138</td><td class="num">~232</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h4>ราคา (ก่อน VAT) ตามเรต</h4>
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>เรต man-day</th><th class="num">ราคา low</th><th class="num">ราคา high</th></tr></thead>
+      <tbody>
+        <tr><td>Junior · 2,500 บาท/วัน</td><td class="num">345,000</td><td class="num">580,000</td></tr>
+        <tr><td>Mid · 4,000 บาท/วัน</td><td class="num">552,000</td><td class="num">928,000</td></tr>
+        <tr><td>Senior · 6,000 บาท/วัน</td><td class="num">828,000</td><td class="num">1,392,000</td></tr>
+        <tr><td>Expert · 8,000 บาท/วัน</td><td class="num">1,104,000</td><td class="num">1,856,000</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="callout tip">
+    <strong>คำแนะนำ — แบ่งเฟส:</strong> แนะนำแบ่ง 2 เฟส ลดความเสี่ยง — ทำ core สะสม/แลกแต้มให้ใช้จริงหน้าร้านก่อน แล้วค่อยเติม engagement (tier/แคมเปญ/referral) ที่ซับซ้อนกว่า
+    <ul>
+      <li><strong>เฟส 1:</strong> Loyalty MVP (กลุ่ม A บางส่วน + B ทั้งหมด): ทะเบียนสมาชิก + points engine + แลกรางวัล + Staff Terminal ใช้จริงกับสาขานำร่อง → ~80–135 man-day (รวม support + contingency) ≈ 200,000–1,080,000 บาท (ตามเรต Junior–Expert)</li>
+      <li><strong>เฟส 2:</strong> Engagement เต็ม (กลุ่ม C/D): Tier + แคมเปญแต้มคูณ + Referral + multi-tenant เต็ม + dashboards — ตีราคาแม่นเมื่อยืนยันกฎ tier/แคมเปญและจำนวนแบรนด์/สมาชิก</li>
+    </ul>
+  </div>
+
+  <div style="margin-top:28px;border:2px dashed var(--teal);border-radius:16px;padding:22px 24px;background:#EFF4F3;">
+    <h3 style="border:0;padding:0;margin:0 0 4px;">🤖 ทางเลือก: ให้ AI เขียนโค้ด (เทียบ คน vs AI)</h3>
+    <p style="font-size:.9rem;color:var(--ink-soft);margin:0 0 12px;">คิดแยกจากฐานเดิม — โมดูล/ขอบเขตเท่าเดิม แต่ AI เร่งงานเขียนโค้ด คนเปลี่ยนบทเป็น <strong style="color:var(--teal-dark)">ผู้ควบคุม AI + รีวิว + เทสต์</strong> · ราคาฝั่ง AI ถูกลงเพราะ <strong>วันน้อยลง</strong> ไม่ใช่เรตถูกลง (เรตเท่าเดิม)</p>
+    <div class="two-col">
+      <div class="scope-box" style="background:#fff;border-color:var(--line);">
+        <h4 style="color:var(--teal-dark)">👷 ทีมคน (ฐานเดิม)</h4>
+        <p style="margin:0;font-size:1.4rem;font-weight:700;color:var(--teal-dark)">138–232 <span style="font-size:.85rem;font-weight:400">man-day</span></p>
+        <p style="margin:2px 0;font-size:.8rem;color:var(--ink-soft)">Effort รวม ~138–232 man-day → ระยะเวลาจริงราว 4–7 เดือน</p>
+        <p style="margin:4px 0 0;font-weight:700;color:var(--amber)">≈ 345,000 – 1,856,000 บาท</p>
+      </div>
+      <div class="scope-box" style="background:var(--green-bg);border:2px solid var(--teal);">
+        <h4 style="color:var(--teal-dark)">🤖 AI + ผู้ควบคุม</h4>
+        <p style="margin:0;font-size:1.4rem;font-weight:700;color:var(--teal-dark)">45–113 <span style="font-size:.85rem;font-weight:400">man-day</span></p>
+        <p style="margin:2px 0;font-size:.8rem;color:var(--ink-soft)">~2–4 เดือน (ทีมเล็ก 1–2 คนคุม AI) เทียบทีมคน</p>
+        <p style="margin:4px 0 0;font-weight:700;color:var(--amber)">≈ 112,500 – 904,000 บาท</p>
+      </div>
+    </div>
+    <h4>AI man-day → ราคา (ก่อน VAT · เรตเท่าเดิม)</h4>
+    <div class="tbl-wrap"><table><tbody>
+        <tr><td>รวมย่อย AI (dev + support)</td><td class="num">36</td><td class="num">90</td></tr>
+        <tr><td>+ Contingency 25%</td><td class="num">9</td><td class="num">23</td></tr>
+        <tr class="grand"><td>รวม AI man-day ทั้งสิ้น</td><td class="num">~45</td><td class="num">~113</td></tr>
+    </tbody></table></div>
+    <div class="tbl-wrap"><table>
+      <thead><tr><th>เรต man-day</th><th class="num">ราคา low</th><th class="num">ราคา high</th></tr></thead>
+      <tbody>
+        <tr><td>Junior · 2,500 บาท/วัน</td><td class="num">112,500</td><td class="num">282,500</td></tr>
+        <tr><td>Mid · 4,000 บาท/วัน</td><td class="num">180,000</td><td class="num">452,000</td></tr>
+        <tr><td>Senior · 6,000 บาท/วัน</td><td class="num">270,000</td><td class="num">678,000</td></tr>
+        <tr><td>Expert · 8,000 บาท/วัน</td><td class="num">360,000</td><td class="num">904,000</td></tr>
+      </tbody>
+    </table></div>
+    <h4>ตัวเร่งราย module (ที่มา: AI md = คน ÷ ตัวเร่ง)</h4>
+    <div class="tbl-wrap"><table>
+      <thead><tr><th>รหัส</th><th>โมดูล</th><th class="num">คน (low–high)</th><th>ตัวเร่ง</th><th class="num">AI (low–high)</th></tr></thead>
+      <tbody>
+        <tr><td>M-01</td><td>จัดการแบรนด์ / Tenant & Onboarding</td><td class="num">8–14</td><td>3–5x</td><td class="num">2–5</td></tr>
+        <tr><td>M-02</td><td>Auth & สิทธิ์ (เจ้าของ/พนักงาน/แอดมิน)</td><td class="num">5–9</td><td>3–5x</td><td class="num">1–3</td></tr>
+        <tr><td>M-03</td><td>ทะเบียนสมาชิก (Member)</td><td class="num">7–12</td><td>3–5x</td><td class="num">2–4</td></tr>
+        <tr><td>M-04</td><td>เครื่องมือสะสมแต้ม (Points Engine)</td><td class="num">12–20</td><td>3–5x</td><td class="num">3–7</td></tr>
+        <tr><td>M-05</td><td>แลกรางวัล + คลังรางวัล</td><td class="num">8–13</td><td>3–5x</td><td class="num">2–5</td></tr>
+        <tr><td>M-06</td><td>Staff Terminal หน้าร้าน</td><td class="num">8–13</td><td>3–5x</td><td class="num">2–5</td></tr>
+        <tr><td>M-07</td><td>ระดับสมาชิก (Tier)</td><td class="num">8–13</td><td>3–5x</td><td class="num">2–5</td></tr>
+        <tr><td>M-08</td><td>โปรโมชัน / แคมเปญ</td><td class="num">10–16</td><td>3–5x</td><td class="num">2–6</td></tr>
+        <tr><td>M-09</td><td>แนะนำเพื่อน (Referral)</td><td class="num">6–10</td><td>3–5x</td><td class="num">2–4</td></tr>
+        <tr><td>M-10</td><td>Dashboard & รายงานแบรนด์</td><td class="num">6–10</td><td>3–5x</td><td class="num">2–4</td></tr>
+        <tr><td>M-11</td><td>Dashboard ผู้ดูแลแพลตฟอร์ม</td><td class="num">5–9</td><td>3–5x</td><td class="num">1–3</td></tr>
+      </tbody>
+    </table></div>
+    <p style="font-size:.8rem;color:var(--ink-soft)">ตัวเร่ง: dev ทั่วไป 3–5x (AI เขียน CRUD/engine/UI เร็ว), งานเชื่อมต่อ/R&D 2–3x (AI เร่งได้น้อยกว่า), งานคน req/UX/PM 1.3–2x, QA/deploy 1.5–2.5x — งานคนกลายเป็นคอขวด</p>
+    <h4>สมมติฐานเฉพาะโหมด AI</h4>
+    <ul>
+    <li>ขับด้วย dev ที่ skill สูง 1 คนต่อ 1 สายงาน + AI coding agent (เช่น Claude Code)</li>
+    <li>โค้ดที่ AI สร้างผ่านรีวิว + เทสต์โดยคนก่อนส่งมอบ (วันรีวิว/เทสต์รวมในตัวเลขแล้ว)</li>
+    <li>งานออกแบบ/ตัดสินใจ/ความปลอดภัย/integration/R&D AI เร่งได้น้อยกว่า — สะท้อนในตัวเร่งแล้ว</li>
+    <li>ขอบเขต/โมดูลเท่าฐานทีมคนเป๊ะ (เทียบ apples-to-apples) เรตเท่าเดิม</li>
+    </ul>
+    <h4>ความเสี่ยงเฉพาะโหมด AI</h4>
+    <ul>
+    <li><strong>AI สร้างโค้ดผิด/หลอน (hallucination)</strong> — รีวิว+เทสต์โดยคนทุกงาน วันรีวิวรวมในตัวเลขแล้ว</li>
+    <li><strong>งาน integration/edge case/R&D ช้ากว่าคาด</strong> — ตั้งตัวเร่งอนุรักษ์นิยม (2–3x) + contingency 25%</li>
+    <li><strong>คุณภาพขึ้นกับ skill ผู้ควบคุม AI</strong> — ใช้ dev senior ขับ + กำหนดมาตรฐานรีวิว/เทสต์</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ================= SECTION 9 ================= -->
+<section id="notes">
+  <h2 class="sec-title"><span class="sec-num">9</span> สมมติฐาน · ความเสี่ยง · คำถามที่ต้องถามเพิ่ม</h2>
+
+  <h3>สมมติฐาน (Assumptions)</h3>
+  <ul>
+    <li>ลูกค้าปลายทางไม่มี self-service — ทุกการสะสม/แลกทำผ่านพนักงานที่ Staff Terminal (เว็บ responsive); ระบุตัวสมาชิกด้วยเบอร์โทร</li>
+    <li>Referral ในบริบท POS-only = พนักงานกรอกรหัส/เบอร์ผู้แนะนำตอนสมัครสมาชิกใหม่ (ไม่มี channel ให้ลูกค้าแชร์เอง)</li>
+    <li>บันทึกยอดซื้อด้วยการคีย์มือที่ terminal เพื่อคำนวณแต้ม — ไม่ต่อ POS/payment เดิมในเฟสนี้</li>
+    <li>เริ่มแบบ standalone ไม่มี integration ภายนอก (SMS/LINE/Email/POS/bank) ในราคานี้</li>
+    <li>เก็บข้อมูลสมาชิกขั้นต่ำ (ชื่อ/เบอร์) ตอนสมัคร — ต้องมี consent ตาม PDPA ที่หน้าร้าน</li>
+    <li>scale กลาง: single DB แบบ row-level multi-tenant (tenant_id) บน cloud มาตรฐานเพียงพอ</li>
+    <li>โมเดลเก็บค่าบริการแบรนด์ (billing) ยังไม่อยู่ใน scope รอบนี้ — ถ้าทำในอนาคตจะใช้ค่าบริการ SaaS ปกติ ไม่มีดอกเบี้ย (halal)</li>
+    <li>ใช้ design system / component library สำเร็จรูป ไม่ออกแบบ UI จากศูนย์</li>
+    <li>พนักงานใช้เว็บ responsive บนมือถือ/แท็บเล็ต ไม่ต้องมี native app แยก</li>
+  </ul>
+
+  <h3>ความเสี่ยง (Risks)</h3>
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>ความเสี่ยง</th><th>ผลกระทบ</th><th>โอกาส</th><th>แนวทางรับมือ</th></tr></thead>
+      <tbody>
+        <tr><td>พนักงานคีย์ยอดซื้อ/เลือกสมาชิกผิด → แต้มเข้าผิดคนหรือผิดจำนวน</td><td>กลาง</td><td>กลาง</td><td>ยืนยันก่อนบันทึก, แสดงชื่อ/เบอร์ชัด, ปรับแต้มย้อนได้ตามสิทธิ์ + เก็บ log ทุกครั้ง</td></tr>
+        <tr><td>โกงแต้ม/referral (สมัครซ้ำเอาแต้มแนะนำ, ปั๊มยอด)</td><td>กลาง</td><td>กลาง</td><td>dedupe เบอร์, จำกัดจำนวน referral, เงื่อนไขปลดแต้ม, log + รายงานผิดปกติ</td></tr>
+        <tr><td>กฎแต้ม/tier/แคมเปญซับซ้อนและเปลี่ยนบ่อย</td><td>กลาง</td><td>สูง</td><td>ออกแบบ engine แบบ config-driven, นิยามลำดับการคิดแต้มเมื่อหลายแคมเปญทับซ้อนให้ชัดแต่ต้น</td></tr>
+        <tr><td>ข้อมูลข้ามแบรนด์รั่ว (tenant isolation)</td><td>สูง</td><td>ต่ำ</td><td>บังคับ tenant scoping ทุก query + เทสต์เฉพาะ + code review</td></tr>
+        <tr><td>สมาชิกซ้ำ/หาไม่เจอ (เบอร์เปลี่ยน, สะกดผิด)</td><td>กลาง</td><td>กลาง</td><td>ค้นหลาย field, ฟังก์ชัน merge สมาชิก, ตรวจซ้ำตอนสมัคร</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>คำถามที่ต้องถามลูกค้าเพิ่ม</h3>
+  <ul>
+    <li>กฎสะสมแต้ม: ซื้อครบเท่าไรได้กี่แต้ม? คิดตามยอดซื้อรวมหรือต่อบิล? มีปัดเศษอย่างไร?</li>
+    <li>แต้มหมดอายุไหม และนานเท่าไร (เช่น 1 ปีนับจากได้รับ หรือสิ้นปี)?</li>
+    <li>Tier มีกี่ระดับ เกณฑ์เลื่อน/ตกชั้นอย่างไร และสิทธิ์/ตัวคูณแต่ละระดับเป็นอย่างไร?</li>
+    <li>Referral ให้แต้มผู้แนะนำ/ผู้ถูกแนะนำฝ่ายละเท่าไร และมีเงื่อนไขปลดแต้ม/กันโกงแบบไหน?</li>
+    <li>บันทึกยอดซื้อยังไงในทางปฏิบัติ (คีย์มือ vs สแกนใบเสร็จ vs อนาคตต่อ POS)?</li>
+    <li>คาดว่ามีกี่แบรนด์/สาขา/สมาชิก และทรานแซกชันสะสม-แลกต่อวันประมาณเท่าไร (นิยาม 'กลาง')?</li>
+    <li>โมเดลรายได้ของแพลตฟอร์มเป็นอย่างไร (เก็บค่าบริการแบรนด์ไหม) — มีผลต่อเฟสถัดไป?</li>
+    <li>อนาคตต้องการให้ลูกค้ามีหน้าดูแต้ม/แลกเอง (LINE/เว็บ) หรือแจ้งเตือนแต้มไหม?</li>
+  </ul>
+
+  <h3>สิ่งที่ไม่รวมในราคานี้</h3>
+  <ul>
+    <li>ค่า cloud / hosting / โดเมน</li>
+    <li>ค่า SMS / LINE / Email notify (หากเพิ่มภายหลัง)</li>
+    <li>งานเชื่อม POS / payment / bank (เสนอแยกเมื่อต้องการ)</li>
+    <li>ระบบเก็บค่าบริการแบรนด์ (billing/subscription) — เสนอแยก</li>
+    <li>เนื้อหา / รูปรางวัล &amp; สื่อการตลาด (แบรนด์จัดเตรียม)</li>
+    <li>บัตรสมาชิกพลาสติก / การพิมพ์การ์ด</li>
+    <li>งานดูแลหลังส่งมอบ (maintenance) — เสนอแยกเป็นสัญญารายปี</li>
+  </ul>
+</section>
+
+<footer>
+  <p class="sig">จัดทำโดย เคาะดีญะฮ์ — ที่ปรึกษา Presales / Solution Architect</p>
+  <p>เอกสาร v0.1 (draft) · ช่วงราคา ≈ 345,000 – 1,856,000 บาท · ยังไม่รวม VAT</p>
+  <p>"เก็บให้ครบ ตีให้จริง เขียนสมมติฐานให้ชัด" — ราคาที่มั่ว ทำร้ายทุกฝ่าย</p>
+</footer>
+
+</div>
+
+<button id="toTop" aria-label="ขึ้นบนสุด" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
+
+<script>
+(function(){
+  var links = Array.prototype.slice.call(document.querySelectorAll('nav.toc a'));
+  var map = {};
+  links.forEach(function(a){ map[a.getAttribute('href').slice(1)] = a; });
+  var obs = new IntersectionObserver(function(entries){
+    entries.forEach(function(e){
+      if(e.isIntersecting){
+        links.forEach(function(a){ a.classList.remove('active'); });
+        if(map[e.target.id]) map[e.target.id].classList.add('active');
+      }
+    });
+  }, { rootMargin:'-96px 0px -65% 0px', threshold:0 });
+  document.querySelectorAll('section[id]').forEach(function(s){ obs.observe(s); });
+
+  var btn = document.getElementById('toTop');
+  window.addEventListener('scroll', function(){
+    if(window.scrollY > 600) btn.classList.add('show'); else btn.classList.remove('show');
+  }, { passive:true });
+})();
+</script>
+
+</body>
+</html>

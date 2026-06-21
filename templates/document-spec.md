@@ -29,11 +29,18 @@ Section หลัก (เลข 1–9 ตายตัว · `output.html` แล
 | 5 | `modules` | โมดูล / ฟีเจอร์ | `modules[]`, `groupLegend` | ⚠️ เห็นแค่ `name`+`desc` — ซ่อนคอลัมน์ `group`,`code`,`complexity`,`mdLow`,`mdHigh`, แถว subtotal, `groupLegend` |
 | 6 | `nonfunc` | ความต้องการ Non-functional | `nonFunctional[]{key, label, detail?}` | ✅ เต็ม |
 | 7 | `timeline` | Timeline & เทียบ Stack | `timeline{teamAssumption, elapsedNote, stacks[], verdict}` | ❌ **ซ่อนทั้ง section** |
-| 8 | `cost` | ค่าใช้จ่าย & ราคา | `support[]`, `rates[]`, `contingencyPct`, `phasing` + คำนวณด้วย `totals()`,`sumMd()` | ⚠️ เห็นแค่กล่องสรุปช่วงราคา — ซ่อนตาราง support/man-day/ตารางเรต และ `phasing` |
+| 8 | `cost` | ค่าใช้จ่าย & ราคา | `support[]`, `rates[]`, `contingencyPct`, `phasing`, **`ai{}`** + คำนวณด้วย `totals()`,`sumMd()`,`aiTotals()` | ⚠️ เห็นแค่กล่องสรุปช่วงราคา — ซ่อนตาราง support/man-day/ตารางเรต, `phasing` **และบล็อก AI ทั้งหมด** |
 | 9 | `notes` | สมมติฐาน · ความเสี่ยง · คำถาม · สิ่งที่ไม่รวมราคา | `assumptions[]`, `risks[]`, `openQuestions[]`, `outOfPrice[]` | ✅ — clean รหัส `(M-0x)` ออกจาก free-text, หัวข้อ "คำถามที่ต้องถามลูกค้าเพิ่ม" → "ข้อมูลที่ต้องการเพิ่มเติม" |
 
 **กติกาเลข section:** internal เห็น 1–9 ครบ · client ซ่อน §7 (timeline) แล้ว **รันเลขใหม่ต่อเนื่อง** (client จะมี 8 section เลข 1–8)
 **ห้ามใส่:** ตาราง "วิเคราะห์รูปที่ 1–3" / เนื้อหา intake เฉพาะงาน — ไม่ใช่ section มาตรฐาน
+
+### บล็อกย่อย "ทางเลือก: ให้ AI เขียนโค้ด" (อยู่ใน §8 `cost` — ไม่ใช่ section ใหม่)
+> โหมดประเมินที่ 2 — เทียบ **คน vs AI** ในใบเดียว · ฐานคน (§1–9, `modules/support/rates`) **ไม่แตะ** เพิ่มเฉพาะบล็อกนี้
+- **ตำแหน่ง:** ท้าย §8 `cost` ฝั่ง internal (หลัง `phasing`) · **คงเลข section 1–9 เดิม ไม่เพิ่ม section**
+- **เงื่อนไขแสดง:** เมื่อ `p.ai` มีค่า **และ `audience==="internal"` เท่านั้น** → **client ไม่เห็น** (เหมือน §7 timeline) เอกสารลูกค้าเดิมไม่เปลี่ยน
+- **เนื้อหา (จาก `ai{}`):** การ์ดเทียบ คน vs AI (man-day/เวลา/ราคา) · ตาราง AI man-day→ราคา (`aiTotals()`+`ai.rates`) · ตารางตัวเร่งราย module (ผูก `ai.modules[].code` กับ `modules[]` เดิม) · `ai.assumptions[]` · `ai.risks[]`
+- **กฎเหล็ก:** AI man-day ทุกตัวต้องมี `factor` กำกับ (ที่มาของวันที่ลด) · เรต `ai.rates` = เรตคนเท่าเดิม
 
 ---
 
@@ -78,6 +85,7 @@ Section หลัก (เลข 1–9 ตายตัว · `output.html` แล
 
 - [ ] `grep '<section id=' output.html` ได้ id เรียง: overview, scope, actors, usecases, modules, nonfunc, timeline, cost, notes
 - [ ] React `/project/<id>/internal` มี section id ชุดเดียวกัน เรียงเหมือนกัน
-- [ ] React `/project/<id>` (client) ซ่อน timeline + คอลัมน์/ตารางภายใน + ไม่มีคำต้องห้าม
+- [ ] React `/project/<id>` (client) ซ่อน timeline + คอลัมน์/ตารางภายใน + **บล็อก AI** + ไม่มีคำต้องห้าม
+- [ ] บล็อก AI (ถ้ามี `ai{}`) อยู่ใน §8 ฝั่ง internal เท่านั้น · AI man-day แต่ละ module = ceil(คน ÷ factor) · มี `factor` กำกับครบ
 - [ ] สารบัญ pin ติดบนจอเมื่อเลื่อน + scroll-spy ทำงาน (ทั้ง React และ output.html)
 - [ ] สีตรงตาม token ตาราง §3

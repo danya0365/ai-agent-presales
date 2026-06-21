@@ -76,6 +76,23 @@
 > กฎเหล็ก: **ทุกตัวเลขต้องมีที่มา** — ราคาผูกกับ man-day, man-day ผูกกับ module,
 > module ผูกกับ requirement ถ้าตอบไม่ได้ว่าตัวเลขมาจากไหน แปลว่ายังตีราคาไม่ได้
 
+### สเตป 3.5 — โหมด AI: "ถ้าให้ AI เขียนโค้ด" (ทำคู่กับสเตป 3 เสมอ)
+> ทุกใบประเมิน **ออก 2 มุมเสมอ**: (1) ทีมคน = สเตป 3 เดิม · (2) ให้ AI เขียนโค้ด = สเตป 3.5
+> แสดง **เทียบ คน vs AI ในใบเดียว** (บล็อกอยู่ใน §8 ของเอกสาร) — รายละเอียดสูตรดู
+> [templates/cost-estimation.md](templates/cost-estimation.md) §7
+
+- **ฐานคนไม่แตะ** — `modules[]`, `support[]`, man-day คน, เรต, ราคาคน = ของเดิม ถูกแล้ว **ห้ามแก้** (เพิ่มได้เท่านั้น)
+- **AI = ตัวเร่งบน module เดิม** — `AI man-day = man-day คน ÷ ตัวเร่ง` (โมดูล/ขอบเขตเท่าเดิม)
+  คนเปลี่ยนบทจากกรรมกรเขียนโค้ด → **ผู้ควบคุม AI + รีวิว + เทสต์** (วันรีวิว/เทสต์รวมในตัวเลขแล้ว)
+- **ตัวเร่ง default — auto-fill ไม่ต้องถาม** (ปัดขึ้น, ขั้นต่ำ 1 วัน):
+  - Dev modules: 3–5x → `aiMdLow=ceil(mdLow/5)`, `aiMdHigh=ceil(mdHigh/3)`
+  - Support req/design/UX, PM: 1.3–2x → `ceil(mdLow/2)`, `ceil(mdHigh/1.3)`
+  - Support QA, Deploy/DevOps: 1.5–2.5x → `ceil(mdLow/2.5)`, `ceil(mdHigh/1.5)`
+  - **Contingency โหมด AI = 25%** · **เรตเท่าเดิม (Junior–Expert)** → ราคา AI ถูกลงเพราะ **วันน้อยลง ไม่ใช่เรตถูกลง**
+- **Insight ที่ต้องสื่อ** — AI เร่งงานเขียนโค้ดได้มาก แต่ **งานคน (req/รีวิว/QA/deploy) กลายเป็นคอขวด** → support เร่งได้น้อยกว่า dev
+- **กฎเหล็กยังอยู่** — AI man-day ทุกตัวต้องมี `factor` กำกับ (ที่มา) · ต้องมี `ai.assumptions`/`ai.risks` เฉพาะ AI (หลอน/รีวิวแน่น/integration ช้ากว่าคาด)
+- **การมองเห็น** — บล็อก AI = **internal เท่านั้น** (เอกสารลูกค้าเดิมไม่เปลี่ยน) เว้นแต่พี่สั่งให้โชว์ลูกค้า · **เรื่องตัวเร่ง = สั่งครั้งเดียวจบ ไม่ต้องถามกลับ** (เหมือนเรต)
+
 ---
 
 ## หลักการทำงานของฉัน
@@ -139,6 +156,7 @@ presales/                        ← data เท่านั้น
    > - ถามเฉพาะมิติที่ขาดจน "ตีราคาไม่ได้จริง ๆ" (ฟีเจอร์หลัก/ช่องทาง/scale/integration ที่ทำให้ man-day ต่างกันหลายเท่า)
 3. ทำตาม 3 สเตปของฉัน: เก็บ requirement → วิเคราะห์ (ตาม [templates/requirement-analysis.md](templates/requirement-analysis.md)) →
    ตีราคา (ตาม [templates/cost-estimation.md](templates/cost-estimation.md)) — **ไม่ต้องถามเรต man-day**
+   > 🤖 **ทำสเตป 3.5 (โหมด AI) ด้วยทุกครั้ง** — เติมบล็อก `ai{}` ลง `data.json` (ตัวเร่ง default, contingency 25%, เรตเท่าเดิม) เพื่อเทียบ คน vs AI
    > 📐 **โครงเอกสาร (section + ลำดับ + field) ต้องยึด [templates/document-spec.md](templates/document-spec.md) เป็นแหล่งความจริงเดียว**
    > ทั้ง `data.json`, `output.html` และเว็บ React ต้องตรงกัน — **ห้าม improvise โครง/หัวข้อ/เนื้อหาเอง**
    ใส่เรต default 4 ระดับลง `rates[]` อัตโนมัติ: Junior 2,500 / Mid 4,000 / Senior 6,000 / Expert 8,000 (บาท/วัน)
@@ -155,9 +173,33 @@ presales/                        ← data เท่านั้น
    - `data.json` — ตาม schema (ดูตัวอย่างจริงในโฟลเดอร์ output ที่มีอยู่): `id, projectName, client, date, source, currency,
      summary{scopeNote,manDayLow,manDayHigh,priceLow,priceHigh}, overview, businessGoal, actors[], useCases[]{title,actor,desc}, scope{in[],out[]},
      modules[]{group,code,name,desc,complexity,mdLow,mdHigh}, nonFunctional[]{key,label,detail}, support[]{name,mdLow,mdHigh}, contingencyPct, rates[]{label,rate},
-     groupLegend, timeline{teamAssumption,elapsedNote,stacks[],verdict}, phasing, assumptions[], risks[], openQuestions[], outOfPrice[]`
+     groupLegend, timeline{teamAssumption,elapsedNote,stacks[],verdict}, phasing, assumptions[], risks[], openQuestions[], outOfPrice[],
+     ai{approach:"speedup", factorNote, roleNote, modules[]{code,aiMdLow,aiMdHigh,factor}, support[]{name,aiMdLow,aiMdHigh}, contingencyPct:25, rates[]{label,rate}, summary{manDayLow,manDayHigh,priceLow,priceHigh,elapsedNote}, assumptions[], risks[]}`
    - `output.html` — ใบเสนอ standalone ที่ **โครงต้องตรงกับ [templates/document-spec.md](templates/document-spec.md) เป๊ะ** (section 1–9 เรียงเหมือน React + สารบัญ sticky + scroll-spy) — **ห้าม improvise โครง/เนื้อหา ทุกอย่างมาจาก data.json**
    - ฟิลด์ `source` ต้อง = `"input/<project-slug>"` เพื่อกันการทำซ้ำ
+5.5 🤝 **ส่งดีลเข้า mission-control (ศูนย์กลางสายพาน) ผ่าน API — แทนการเขียน `handoff.json` local:**
+   pipeline state ทั้งหมด (สถานะดีล/การส่งต่อ) ย้ายไปอยู่ที่ **mission-control (REST API + DB cloud)** แล้ว
+   เพื่อให้ agent คนละเครื่องคุยกันได้ · หลังได้ `data.json` ให้ **POST ดีลเข้า API** (ดีลใหม่ตั้ง `quoted` อัตโนมัติ)
+   **ฉันไม่กด `approved` เอง** — พี่กดจากปุ่มบน dashboard ของ mission-control
+   ```bash
+   curl -sS -X POST "$MISSION_CONTROL_URL/api/deals" \
+     -H "Authorization: Bearer $AGENT_API_KEY" -H "Content-Type: application/json" \
+     -d '{
+       "quotationId": "<uuid เดียวกับ data.json>",
+       "projectName": "<ชื่อโปรเจกต์>",
+       "source": "input/<slug>",
+       "buildScope": "all",
+       "budgetGuard": { "manDayLow": <summary.manDayLow>, "manDayHigh": <summary.manDayHigh> },
+       "summary": { "scopeNote": "<summary.scopeNote>", "priceLow": <summary.priceLow>, "priceHigh": <summary.priceHigh> },
+       "notesForManager": "<โน้ตสั้น ๆ ถ้ามี เช่น เริ่มเฟส 1 ก่อน / ระวังจุดไหน>"
+     }'
+   ```
+   - **env ที่ต้องมี:** `MISSION_CONTROL_URL` (เช่น `http://localhost:3000` หรือ URL prod) + `AGENT_API_KEY`
+   - **upsert ด้วย `quotationId`** — ยิงซ้ำได้ ไม่สร้างดีลซ้ำ · ถ้า curl ไม่ผ่าน (เช่น API ล่ม) → **รายงานพี่ ไม่เงียบ**
+   - **เลิกเขียน `handoff.json` local แล้ว** — source of truth ของ pipeline = DB ของ mission-control
+   - `data.json` + `output.html` ยัง immutable + ยังขึ้น presales-quotation เหมือนเดิม (คนละเรื่องกับ pipeline)
+   > 🔭 หมายเหตุ distributed: ตอนนี้ manager ยังอ่าน `data.json` จากเครื่องเดียวกันเพื่อแตก backlog · เมื่อแยกเครื่องจริง
+   > ค่อยขยาย API ให้ส่ง quotation detail ตามไปด้วย (ฟิลด์ `quotationData`) — ดู mission-control roadmap
 6. 🚀 **Sync + deploy ขึ้น Next.js/Vercel (บังคับ — ห้ามข้าม):**
    route เป็น generic → **ไม่ต้องแก้โค้ด Next "ต่อโปรเจกต์"** จริง แต่ **"ต้อง" sync data เข้าแอป + push
    ให้ Vercel เห็น** ไม่งั้นเว็บจริง (`presales-quotation.vercel.app`) จะไม่เห็นโปรเจกต์ใหม่
@@ -173,6 +215,8 @@ presales/                        ← data เท่านั้น
      ให้ตรง [templates/document-spec.md](templates/document-spec.md) ก่อน (นี่คือกรณีเดียวที่ต้อง "แก้โค้ด Next")
 7. **หยุดและรายงานพี่**: ชื่อโปรเจกต์, uuid, ช่วงราคา, path ไฟล์, และ **URL จริงบน Vercel**
    `https://presales-quotation.vercel.app/project/<uuid>` (ลูกค้า) + `…/project/<uuid>/internal` (ทีม) — ไม่ไปทำตัวถัดไปเอง
+   - บอกพี่ด้วยว่า **ดีลถูกส่งเข้า mission-control แล้ว (สถานะ `quoted`)** — **ถ้าดีลปิด พี่กดปุ่ม `อนุมัติ` บน
+     dashboard** (`$MISSION_CONTROL_URL`) แล้วฝั่ง manager (อุมัร) จะ GET ดีลที่ approved ไปแตก backlog ต่อ
 
 **ข้อควรระวังด้านเทคนิค (Next.js 16.2.9 — มี breaking changes):**
 - แอปอยู่ที่ `/Users/marosdeeuma/ai-project/workspaces/presales-quotation/` (ไม่ใช่ใน presales แล้ว)

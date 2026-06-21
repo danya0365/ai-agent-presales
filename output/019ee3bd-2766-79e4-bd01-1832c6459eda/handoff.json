@@ -1,0 +1,17 @@
+{
+  "schemaVersion": "1.0",
+  "kind": "handoff",
+  "quotationId": "019ee3bd-2766-79e4-bd01-1832c6459eda",
+  "projectName": "ระบบคูปอง (Coupon System) — Multi-tenant SaaS",
+  "source": "input/coupon-system",
+  "status": "planned",
+  "statusHistory": [
+    { "status": "quoted", "at": "2026-06-20T09:35:39Z", "by": "presales", "note": "ออกใบเสนอเสร็จ รอเจ้าของอนุมัติเริ่ม build" },
+    { "status": "approved", "at": "2026-06-20T09:36:30Z", "by": "owner", "note": "ดีลปิด เริ่ม build เฟส 1 (group B Coupon Engine)" },
+    { "status": "planned", "at": "2026-06-20T09:38:00Z", "by": "manager", "note": "อุมัรแตก backlog 13 stories / 2 sprint (est 38-62 ไม่หลุดงบ) → manager/output/<uuid>/" }
+  ],
+  "buildScope": "phase1",
+  "quotationRef": "output/019ee3bd-2766-79e4-bd01-1832c6459eda/data.json",
+  "budgetGuard": { "manDayLow": 38, "manDayHigh": 62 },
+  "notesForManager": "เริ่มเฟส 1 = group B (Coupon Engine) เท่านั้น: M-03 จัดการคูปองส่วนลด, M-04 คูปองแลกของรางวัล+สต็อก, M-05 QR+Device Session, M-06 Redemption หน้าร้าน. ยังไม่ทำ group A (Platform/Tenant setup เต็มรูป), C (Billing/PromptPay), D (Dashboard). budgetGuard = man-day ของ 4 module dev เฟส 1 (ไม่รวม support)."
+}

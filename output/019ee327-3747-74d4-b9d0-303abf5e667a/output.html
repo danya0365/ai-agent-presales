@@ -421,6 +421,71 @@
       <li><strong>เฟส 2:</strong> SSO / Big Data / AI: ค่อยตีราคาแม่นเมื่อ requirement นิ่งและตอบ Open Questions ครบ</li>
     </ul>
   </div>
+
+  <div style="margin-top:28px;border:2px dashed var(--teal);border-radius:16px;padding:22px 24px;background:#EFF4F3;">
+    <h3 style="border:0;padding:0;margin:0 0 4px;">🤖 ทางเลือก: ให้ AI เขียนโค้ด (เทียบ คน vs AI)</h3>
+    <p style="font-size:.9rem;color:var(--ink-soft);margin:0 0 12px;">คิดแยกจากฐานเดิม — โมดูล/ขอบเขตเท่าเดิม แต่ AI เร่งงานเขียนโค้ด คนเปลี่ยนบทเป็น <strong style="color:var(--teal-dark)">ผู้ควบคุม AI + รีวิว + เทสต์</strong> · ราคาฝั่ง AI ถูกลงเพราะ <strong>วันน้อยลง</strong> ไม่ใช่เรตถูกลง (เรตเท่าเดิม)</p>
+    <div class="two-col">
+      <div class="scope-box" style="background:#fff;border-color:var(--line);">
+        <h4 style="color:var(--teal-dark)">👷 ทีมคน (ฐานเดิม)</h4>
+        <p style="margin:0;font-size:1.4rem;font-weight:700;color:var(--teal-dark)">220–380 <span style="font-size:.85rem;font-weight:400">man-day</span></p>
+        <p style="margin:2px 0;font-size:.8rem;color:var(--ink-soft)">Effort รวม ~220–380 man-day → ระยะเวลาจริงราว 5–9 เดือน</p>
+        <p style="margin:4px 0 0;font-weight:700;color:var(--amber)">≈ 550,000 – 3,040,000 บาท</p>
+      </div>
+      <div class="scope-box" style="background:var(--green-bg);border:2px solid var(--teal);">
+        <h4 style="color:var(--teal-dark)">🤖 AI + ผู้ควบคุม</h4>
+        <p style="margin:0;font-size:1.4rem;font-weight:700;color:var(--teal-dark)">83–218 <span style="font-size:.85rem;font-weight:400">man-day</span></p>
+        <p style="margin:2px 0;font-size:.8rem;color:var(--ink-soft)">~3–7 เดือน (ทีมเล็ก 1–2 คนคุม AI) เทียบทีมคน</p>
+        <p style="margin:4px 0 0;font-weight:700;color:var(--amber)">≈ 207,500 – 1,744,000 บาท</p>
+      </div>
+    </div>
+    <h4>AI man-day → ราคา (ก่อน VAT · เรตเท่าเดิม)</h4>
+    <div class="tbl-wrap"><table><tbody>
+        <tr><td>รวมย่อย AI (dev + support)</td><td class="num">66</td><td class="num">174</td></tr>
+        <tr><td>+ Contingency 25%</td><td class="num">17</td><td class="num">44</td></tr>
+        <tr class="grand"><td>รวม AI man-day ทั้งสิ้น</td><td class="num">~83</td><td class="num">~218</td></tr>
+    </tbody></table></div>
+    <div class="tbl-wrap"><table>
+      <thead><tr><th>เรต man-day</th><th class="num">ราคา low</th><th class="num">ราคา high</th></tr></thead>
+      <tbody>
+        <tr><td>Junior · 2,500 บาท/วัน</td><td class="num">207,500</td><td class="num">545,000</td></tr>
+        <tr><td>Mid · 4,000 บาท/วัน</td><td class="num">332,000</td><td class="num">872,000</td></tr>
+        <tr><td>Senior · 6,000 บาท/วัน</td><td class="num">498,000</td><td class="num">1,308,000</td></tr>
+        <tr><td>Expert · 8,000 บาท/วัน</td><td class="num">664,000</td><td class="num">1,744,000</td></tr>
+      </tbody>
+    </table></div>
+    <h4>ตัวเร่งราย module (ที่มา: AI md = คน ÷ ตัวเร่ง)</h4>
+    <div class="tbl-wrap"><table>
+      <thead><tr><th>รหัส</th><th>โมดูล</th><th class="num">คน (low–high)</th><th>ตัวเร่ง</th><th class="num">AI (low–high)</th></tr></thead>
+      <tbody>
+        <tr><td>M-01</td><td>จัดการสิทธิ์ / ผู้ใช้ (RBAC)</td><td class="num">6–10</td><td>3–5x</td><td class="num">2–4</td></tr>
+        <tr><td>M-02</td><td>จัดการหนังสืออิเล็กทรอนิกส์</td><td class="num">15–25</td><td>2–3x</td><td class="num">5–13</td></tr>
+        <tr><td>M-03</td><td>จัดการคำสั่งซื้อ</td><td class="num">10–16</td><td>3–5x</td><td class="num">2–6</td></tr>
+        <tr><td>M-04</td><td>ประวัติการสั่งซื้อ</td><td class="num">4–7</td><td>3–5x</td><td class="num">1–3</td></tr>
+        <tr><td>M-05</td><td>รายงาน & สถิติ</td><td class="num">8–14</td><td>3–5x</td><td class="num">2–5</td></tr>
+        <tr><td>M-06</td><td>Single Sign-On (SSO)</td><td class="num">8–14</td><td>2–3x</td><td class="num">3–7</td></tr>
+        <tr><td>M-07</td><td>เชื่อม API ภายนอก</td><td class="num">15–30</td><td>2–3x</td><td class="num">5–15</td></tr>
+        <tr><td>M-08</td><td>Big Data pipeline / ETL</td><td class="num">20–35</td><td>2–3x</td><td class="num">7–18</td></tr>
+        <tr><td>M-09</td><td>Analytics dashboard</td><td class="num">10–18</td><td>2–3x</td><td class="num">4–9</td></tr>
+        <tr><td>M-10</td><td>AI integration layer + RAG</td><td class="num">18–30</td><td>2–3x</td><td class="num">6–15</td></tr>
+        <tr><td>M-11</td><td>Adaptive recommendation engine</td><td class="num">20–35</td><td>2–3x</td><td class="num">7–18</td></tr>
+      </tbody>
+    </table></div>
+    <p style="font-size:.8rem;color:var(--ink-soft)">ตัวเร่ง: dev ทั่วไป 3–5x (AI เขียน CRUD/engine/UI เร็ว), งานเชื่อมต่อ/R&D 2–3x (AI เร่งได้น้อยกว่า), งานคน req/UX/PM 1.3–2x, QA/deploy 1.5–2.5x — งานคนกลายเป็นคอขวด</p>
+    <h4>สมมติฐานเฉพาะโหมด AI</h4>
+    <ul>
+    <li>ขับด้วย dev ที่ skill สูง 1 คนต่อ 1 สายงาน + AI coding agent (เช่น Claude Code)</li>
+    <li>โค้ดที่ AI สร้างผ่านรีวิว + เทสต์โดยคนก่อนส่งมอบ (วันรีวิว/เทสต์รวมในตัวเลขแล้ว)</li>
+    <li>งานออกแบบ/ตัดสินใจ/ความปลอดภัย/integration/R&D AI เร่งได้น้อยกว่า — สะท้อนในตัวเร่งแล้ว</li>
+    <li>ขอบเขต/โมดูลเท่าฐานทีมคนเป๊ะ (เทียบ apples-to-apples) เรตเท่าเดิม</li>
+    </ul>
+    <h4>ความเสี่ยงเฉพาะโหมด AI</h4>
+    <ul>
+    <li><strong>AI สร้างโค้ดผิด/หลอน (hallucination)</strong> — รีวิว+เทสต์โดยคนทุกงาน วันรีวิวรวมในตัวเลขแล้ว</li>
+    <li><strong>งาน integration/edge case/R&D ช้ากว่าคาด</strong> — ตั้งตัวเร่งอนุรักษ์นิยม (2–3x) + contingency 25%</li>
+    <li><strong>คุณภาพขึ้นกับ skill ผู้ควบคุม AI</strong> — ใช้ dev senior ขับ + กำหนดมาตรฐานรีวิว/เทสต์</li>
+    </ul>
+  </div>
 </section>
 
 <!-- ================= SECTION 9 ================= -->

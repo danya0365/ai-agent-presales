@@ -20,19 +20,59 @@
     "successMetric": "จำนวนร้านที่ active, จำนวนคูปองที่ออก/ถูกใช้ (redemption rate), ยอดของรางวัลที่แลก, รายได้ค่าบริการรายวันรวม, อัตราร้านที่ต่ออายุ"
   },
   "actors": [
-    { "role": "ลูกค้า / ผู้ถือคูปอง (หน้าร้าน)", "can": "สแกน QR ที่ร้านเพื่อรับ/ดูคูปองของตัวเอง (เก็บ session ในเครื่อง), ใช้คูปองส่วนลด, แลกของรางวัล — เฉพาะร้านนั้น" },
-    { "role": "พนักงานร้าน (Staff)", "can": "สแกน/ยืนยันการใช้คูปองหน้าร้าน, ออก QR ให้ลูกค้า, ค้นหาลูกค้าเดิมแล้วผูกกับเครื่องใหม่, ตรวจของรางวัลคงเหลือ" },
-    { "role": "เจ้าของร้าน (Merchant)", "can": "สร้าง/จัดการคูปอง & ของรางวัล, ดูรายงานร้าน, ชำระค่าบริการรายวัน, จัดการพนักงาน" },
-    { "role": "ผู้ดูแลแพลตฟอร์ม (Platform Admin)", "can": "อนุมัติ/เปิด-ปิดร้าน, ดูบิล & รายได้รวม, ยืนยันการชำระ PromptPay, ดูภาพรวมทุกร้าน" }
+    {
+      "role": "ลูกค้า / ผู้ถือคูปอง (หน้าร้าน)",
+      "can": "สแกน QR ที่ร้านเพื่อรับ/ดูคูปองของตัวเอง (เก็บ session ในเครื่อง), ใช้คูปองส่วนลด, แลกของรางวัล — เฉพาะร้านนั้น"
+    },
+    {
+      "role": "พนักงานร้าน (Staff)",
+      "can": "สแกน/ยืนยันการใช้คูปองหน้าร้าน, ออก QR ให้ลูกค้า, ค้นหาลูกค้าเดิมแล้วผูกกับเครื่องใหม่, ตรวจของรางวัลคงเหลือ"
+    },
+    {
+      "role": "เจ้าของร้าน (Merchant)",
+      "can": "สร้าง/จัดการคูปอง & ของรางวัล, ดูรายงานร้าน, ชำระค่าบริการรายวัน, จัดการพนักงาน"
+    },
+    {
+      "role": "ผู้ดูแลแพลตฟอร์ม (Platform Admin)",
+      "can": "อนุมัติ/เปิด-ปิดร้าน, ดูบิล & รายได้รวม, ยืนยันการชำระ PromptPay, ดูภาพรวมทุกร้าน"
+    }
   ],
   "useCases": [
-    { "title": "สมัคร & เปิดร้าน (onboarding)", "actor": "เจ้าของร้าน (Merchant)", "desc": "สมัครเปิดร้าน ตั้งโปรไฟล์ร้าน รอแอดมินอนุมัติ แล้วเริ่มสร้างคูปองได้" },
-    { "title": "สร้างคูปองส่วนลด/โปรโมชัน", "actor": "เจ้าของร้าน (Merchant)", "desc": "กำหนดประเภท (%, จำนวนเงิน, ซื้อ 1 แถม 1), เงื่อนไข, วันหมดอายุ และจำนวนจำกัด" },
-    { "title": "รับคูปอง & กลับเข้าดูคูปองด้วยการสแกน QR ที่ร้าน", "actor": "ลูกค้า / ผู้ถือคูปอง (หน้าร้าน)", "desc": "สแกน QR ที่ร้าน ระบบออก device-bound session เก็บในเครื่อง ลูกค้าเห็นคูปองของตัวเองในร้านนั้น เปลี่ยนเครื่องให้พนักงานค้นหาลูกค้าเดิมแล้วผูกเครื่องใหม่ คูปองเดิมยังอยู่ครบ" },
-    { "title": "ใช้คูปอง (redeem) หน้าร้าน", "actor": "พนักงานร้าน (Staff)", "desc": "พนักงานสแกน/ยืนยันคูปองของลูกค้า ระบบตัดสิทธิ์และกันใช้ซ้ำทันที" },
-    { "title": "แลกของรางวัล", "actor": "ลูกค้า / ผู้ถือคูปอง (หน้าร้าน)", "desc": "เลือกแลกของรางวัลจากคูปองสะสม ระบบตัดสต็อกของรางวัลและบันทึกการแลก" },
-    { "title": "คิดค่าบริการรายวัน & ชำระ PromptPay", "actor": "เจ้าของร้าน (Merchant)", "desc": "ระบบสะสมค่าบริการรายวัน แสดง QR PromptPay ให้ชำระ ร้านอัปสลิป แอดมินยืนยัน" },
-    { "title": "จัดการร้าน & ดูรายได้รวม", "actor": "ผู้ดูแลแพลตฟอร์ม (Platform Admin)", "desc": "อนุมัติ/เปิด-ปิดร้าน ดูสถานะค้างชำระ ยืนยันการชำระ และดูภาพรวมรายได้ทุกร้าน" }
+    {
+      "title": "สมัคร & เปิดร้าน (onboarding)",
+      "actor": "เจ้าของร้าน (Merchant)",
+      "desc": "สมัครเปิดร้าน ตั้งโปรไฟล์ร้าน รอแอดมินอนุมัติ แล้วเริ่มสร้างคูปองได้"
+    },
+    {
+      "title": "สร้างคูปองส่วนลด/โปรโมชัน",
+      "actor": "เจ้าของร้าน (Merchant)",
+      "desc": "กำหนดประเภท (%, จำนวนเงิน, ซื้อ 1 แถม 1), เงื่อนไข, วันหมดอายุ และจำนวนจำกัด"
+    },
+    {
+      "title": "รับคูปอง & กลับเข้าดูคูปองด้วยการสแกน QR ที่ร้าน",
+      "actor": "ลูกค้า / ผู้ถือคูปอง (หน้าร้าน)",
+      "desc": "สแกน QR ที่ร้าน ระบบออก device-bound session เก็บในเครื่อง ลูกค้าเห็นคูปองของตัวเองในร้านนั้น เปลี่ยนเครื่องให้พนักงานค้นหาลูกค้าเดิมแล้วผูกเครื่องใหม่ คูปองเดิมยังอยู่ครบ"
+    },
+    {
+      "title": "ใช้คูปอง (redeem) หน้าร้าน",
+      "actor": "พนักงานร้าน (Staff)",
+      "desc": "พนักงานสแกน/ยืนยันคูปองของลูกค้า ระบบตัดสิทธิ์และกันใช้ซ้ำทันที"
+    },
+    {
+      "title": "แลกของรางวัล",
+      "actor": "ลูกค้า / ผู้ถือคูปอง (หน้าร้าน)",
+      "desc": "เลือกแลกของรางวัลจากคูปองสะสม ระบบตัดสต็อกของรางวัลและบันทึกการแลก"
+    },
+    {
+      "title": "คิดค่าบริการรายวัน & ชำระ PromptPay",
+      "actor": "เจ้าของร้าน (Merchant)",
+      "desc": "ระบบสะสมค่าบริการรายวัน แสดง QR PromptPay ให้ชำระ ร้านอัปสลิป แอดมินยืนยัน"
+    },
+    {
+      "title": "จัดการร้าน & ดูรายได้รวม",
+      "actor": "ผู้ดูแลแพลตฟอร์ม (Platform Admin)",
+      "desc": "อนุมัติ/เปิด-ปิดร้าน ดูสถานะค้างชำระ ยืนยันการชำระ และดูภาพรวมรายได้ทุกร้าน"
+    }
   ],
   "scope": {
     "in": [
@@ -56,39 +96,171 @@
     ]
   },
   "modules": [
-    { "group": "A", "code": "M-01", "name": "จัดการร้านค้า / Tenant & Onboarding", "desc": "สมัครร้าน, โปรไฟล์ร้าน, อนุมัติ, เปิด/ปิดร้าน, สถานะ active/suspended, แยกข้อมูลแต่ละร้าน", "complexity": "medium-high", "mdLow": 8, "mdHigh": 14 },
-    { "group": "A", "code": "M-02", "name": "Auth & สิทธิ์ฝั่งร้าน", "desc": "login เจ้าของร้าน/พนักงาน, role owner/staff, จัดการพนักงานในร้าน", "complexity": "medium", "mdLow": 5, "mdHigh": 8 },
-    { "group": "B", "code": "M-03", "name": "จัดการคูปองส่วนลด / โปรโมชัน", "desc": "สร้าง/แก้คูปอง (%, จำนวนเงิน, ซื้อ 1 แถม 1), เงื่อนไข, วันเริ่ม-หมดอายุ, จำนวนจำกัด/ต่อคน", "complexity": "high", "mdLow": 12, "mdHigh": 20 },
-    { "group": "B", "code": "M-04", "name": "คูปองแลกของรางวัล + คลังสต็อก", "desc": "นิยามของรางวัล, จำนวนสต็อก, เงื่อนไขแลก, ตัดสต็อกเมื่อแลก, ประวัติการแลก", "complexity": "medium-high", "mdLow": 8, "mdHigh": 13 },
-    { "group": "B", "code": "M-05", "name": "QR + Device Session + ทะเบียนลูกค้าเบื้องต้น", "desc": "ออก QR ที่ร้าน → device-bound token เก็บใน local ผูกร้าน, ทะเบียนลูกค้าเบื้องต้น (ชื่อ/เบอร์) เก็บฝั่ง server, คูปองผูกกับลูกค้า, เปลี่ยนเครื่อง = พนักงานค้นหาลูกค้าแล้วผูกเครื่องใหม่ (คูปองไม่หาย)", "complexity": "high", "mdLow": 11, "mdHigh": 17 },
-    { "group": "B", "code": "M-06", "name": "Redemption หน้าร้าน", "desc": "พนักงานสแกน/ยืนยันการใช้คูปอง, ตรวจสิทธิ์ server-side, กันใช้ซ้ำ (idempotent), log การใช้", "complexity": "medium-high", "mdLow": 7, "mdHigh": 12 },
-    { "group": "C", "code": "M-07", "name": "ระบบคิดค่าบริการรายวัน (Billing)", "desc": "สะสมค่าบริการรายวันต่อร้าน, รอบบิล, ยอดค้างชำระ, auto-suspend/เปิดร้านใหม่เมื่อชำระ, เตือนล่วงหน้า", "complexity": "high", "mdLow": 10, "mdHigh": 16 },
-    { "group": "C", "code": "M-08", "name": "ชำระเงิน PromptPay (manual verify)", "desc": "สร้าง QR PromptPay (EMVCo), หน้าแจ้งชำระ/อัปสลิป, แอดมินยืนยันยอด, ประวัติการชำระ", "complexity": "medium-high", "mdLow": 6, "mdHigh": 10 },
-    { "group": "D", "code": "M-09", "name": "Dashboard & รายงานร้านค้า", "desc": "คูปองที่ออก/ถูกใช้, redemption rate, ของรางวัลคงเหลือ, ยอดค่าบริการของร้าน", "complexity": "medium", "mdLow": 6, "mdHigh": 10 },
-    { "group": "D", "code": "M-10", "name": "Dashboard ผู้ดูแลแพลตฟอร์ม", "desc": "รายชื่อร้านทั้งหมด, สถานะ/ค้างชำระ, ยืนยันการชำระ, รายได้รวม, ภาพรวมการใช้งาน", "complexity": "medium", "mdLow": 6, "mdHigh": 10 }
+    {
+      "group": "A",
+      "code": "M-01",
+      "name": "จัดการร้านค้า / Tenant & Onboarding",
+      "desc": "สมัครร้าน, โปรไฟล์ร้าน, อนุมัติ, เปิด/ปิดร้าน, สถานะ active/suspended, แยกข้อมูลแต่ละร้าน",
+      "complexity": "medium-high",
+      "mdLow": 8,
+      "mdHigh": 14
+    },
+    {
+      "group": "A",
+      "code": "M-02",
+      "name": "Auth & สิทธิ์ฝั่งร้าน",
+      "desc": "login เจ้าของร้าน/พนักงาน, role owner/staff, จัดการพนักงานในร้าน",
+      "complexity": "medium",
+      "mdLow": 5,
+      "mdHigh": 8
+    },
+    {
+      "group": "B",
+      "code": "M-03",
+      "name": "จัดการคูปองส่วนลด / โปรโมชัน",
+      "desc": "สร้าง/แก้คูปอง (%, จำนวนเงิน, ซื้อ 1 แถม 1), เงื่อนไข, วันเริ่ม-หมดอายุ, จำนวนจำกัด/ต่อคน",
+      "complexity": "high",
+      "mdLow": 12,
+      "mdHigh": 20
+    },
+    {
+      "group": "B",
+      "code": "M-04",
+      "name": "คูปองแลกของรางวัล + คลังสต็อก",
+      "desc": "นิยามของรางวัล, จำนวนสต็อก, เงื่อนไขแลก, ตัดสต็อกเมื่อแลก, ประวัติการแลก",
+      "complexity": "medium-high",
+      "mdLow": 8,
+      "mdHigh": 13
+    },
+    {
+      "group": "B",
+      "code": "M-05",
+      "name": "QR + Device Session + ทะเบียนลูกค้าเบื้องต้น",
+      "desc": "ออก QR ที่ร้าน → device-bound token เก็บใน local ผูกร้าน, ทะเบียนลูกค้าเบื้องต้น (ชื่อ/เบอร์) เก็บฝั่ง server, คูปองผูกกับลูกค้า, เปลี่ยนเครื่อง = พนักงานค้นหาลูกค้าแล้วผูกเครื่องใหม่ (คูปองไม่หาย)",
+      "complexity": "high",
+      "mdLow": 11,
+      "mdHigh": 17
+    },
+    {
+      "group": "B",
+      "code": "M-06",
+      "name": "Redemption หน้าร้าน",
+      "desc": "พนักงานสแกน/ยืนยันการใช้คูปอง, ตรวจสิทธิ์ server-side, กันใช้ซ้ำ (idempotent), log การใช้",
+      "complexity": "medium-high",
+      "mdLow": 7,
+      "mdHigh": 12
+    },
+    {
+      "group": "C",
+      "code": "M-07",
+      "name": "ระบบคิดค่าบริการรายวัน (Billing)",
+      "desc": "สะสมค่าบริการรายวันต่อร้าน, รอบบิล, ยอดค้างชำระ, auto-suspend/เปิดร้านใหม่เมื่อชำระ, เตือนล่วงหน้า",
+      "complexity": "high",
+      "mdLow": 10,
+      "mdHigh": 16
+    },
+    {
+      "group": "C",
+      "code": "M-08",
+      "name": "ชำระเงิน PromptPay (manual verify)",
+      "desc": "สร้าง QR PromptPay (EMVCo), หน้าแจ้งชำระ/อัปสลิป, แอดมินยืนยันยอด, ประวัติการชำระ",
+      "complexity": "medium-high",
+      "mdLow": 6,
+      "mdHigh": 10
+    },
+    {
+      "group": "D",
+      "code": "M-09",
+      "name": "Dashboard & รายงานร้านค้า",
+      "desc": "คูปองที่ออก/ถูกใช้, redemption rate, ของรางวัลคงเหลือ, ยอดค่าบริการของร้าน",
+      "complexity": "medium",
+      "mdLow": 6,
+      "mdHigh": 10
+    },
+    {
+      "group": "D",
+      "code": "M-10",
+      "name": "Dashboard ผู้ดูแลแพลตฟอร์ม",
+      "desc": "รายชื่อร้านทั้งหมด, สถานะ/ค้างชำระ, ยืนยันการชำระ, รายได้รวม, ภาพรวมการใช้งาน",
+      "complexity": "medium",
+      "mdLow": 6,
+      "mdHigh": 10
+    }
   ],
   "nonFunctional": [
-    { "key": "Multi-tenant", "label": "แยกข้อมูลแต่ละร้านปลอดภัย (tenant isolation)" },
-    { "key": "กันใช้ซ้ำ", "label": "Redemption idempotent + signed token กันปลอม QR" },
-    { "key": "Device Session", "label": "Token ผูกเครื่อง ปลอดภัย เปลี่ยนเครื่องต้องสแกนใหม่" },
-    { "key": "PromptPay", "label": "QR ถูกต้องตามมาตรฐาน EMVCo" },
-    { "key": "PWA/Responsive", "label": "ใช้บนมือถือลื่น ทั้งฝั่งร้านและลูกค้า" },
-    { "key": "ภาษาไทย", "label": "UI/รายงานภาษาไทยเป็นหลัก" },
-    { "key": "PDPA", "label": "เก็บข้อมูลลูกค้าเท่าที่จำเป็น" },
-    { "key": "Backup", "label": "uptime + สำรองข้อมูล (หลายร้านพึ่งพา)" }
+    {
+      "key": "Multi-tenant",
+      "label": "แยกข้อมูลแต่ละร้านปลอดภัย (tenant isolation)"
+    },
+    {
+      "key": "กันใช้ซ้ำ",
+      "label": "Redemption idempotent + signed token กันปลอม QR"
+    },
+    {
+      "key": "Device Session",
+      "label": "Token ผูกเครื่อง ปลอดภัย เปลี่ยนเครื่องต้องสแกนใหม่"
+    },
+    {
+      "key": "PromptPay",
+      "label": "QR ถูกต้องตามมาตรฐาน EMVCo"
+    },
+    {
+      "key": "PWA/Responsive",
+      "label": "ใช้บนมือถือลื่น ทั้งฝั่งร้านและลูกค้า"
+    },
+    {
+      "key": "ภาษาไทย",
+      "label": "UI/รายงานภาษาไทยเป็นหลัก"
+    },
+    {
+      "key": "PDPA",
+      "label": "เก็บข้อมูลลูกค้าเท่าที่จำเป็น"
+    },
+    {
+      "key": "Backup",
+      "label": "uptime + สำรองข้อมูล (หลายร้านพึ่งพา)"
+    }
   ],
   "support": [
-    { "name": "วิเคราะห์ / ออกแบบระบบ & UX", "mdLow": 8, "mdHigh": 14 },
-    { "name": "ทดสอบ (QA / test)", "mdLow": 10, "mdHigh": 16 },
-    { "name": "ติดตั้ง / ขึ้นระบบ (Deploy / DevOps · multi-tenant)", "mdLow": 8, "mdHigh": 13 },
-    { "name": "จัดการโครงการ (PM)", "mdLow": 8, "mdHigh": 13 }
+    {
+      "name": "วิเคราะห์ / ออกแบบระบบ & UX",
+      "mdLow": 8,
+      "mdHigh": 14
+    },
+    {
+      "name": "ทดสอบ (QA / test)",
+      "mdLow": 10,
+      "mdHigh": 16
+    },
+    {
+      "name": "ติดตั้ง / ขึ้นระบบ (Deploy / DevOps · multi-tenant)",
+      "mdLow": 8,
+      "mdHigh": 13
+    },
+    {
+      "name": "จัดการโครงการ (PM)",
+      "mdLow": 8,
+      "mdHigh": 13
+    }
   ],
   "contingencyPct": 20,
   "rates": [
-    { "label": "Junior", "rate": 2500 },
-    { "label": "Mid", "rate": 4000 },
-    { "label": "Senior", "rate": 6000 },
-    { "label": "Expert", "rate": 8000 }
+    {
+      "label": "Junior",
+      "rate": 2500
+    },
+    {
+      "label": "Mid",
+      "rate": 4000
+    },
+    {
+      "label": "Senior",
+      "rate": 6000
+    },
+    {
+      "label": "Expert",
+      "rate": 8000
+    }
   ],
   "manDayPerDay": 8,
   "groupLegend": {
@@ -101,8 +273,30 @@
     "teamAssumption": "ทีม freelance 2–3 คน (full-stack 2 + PM/QA แชร์ · ~2 effective heads)",
     "elapsedNote": "Effort รวม ~134–222 man-day → ระยะเวลาจริงราว 3.5–6 เดือน",
     "stacks": [
-      { "name": "Laravel (PHP) + Filament", "elapsed": "~3.5–5.5 เดือน", "pros": ["Admin/CRUD ร้าน + billing + dashboard scaffolding เร็ว (กลุ่ม A/C/D ได้เปรียบ)", "โตเต็มที่ เหมาะ multi-tenant + รายงาน", "หา dev ไทยง่าย"], "cons": ["ส่วน QR/PWA device session ฝั่งลูกค้าต้องทำ frontend เพิ่มเอง"] },
-      { "name": "Next.js (React/TS)", "elapsed": "~4–6 เดือน", "pros": ["PWA/device session ฝั่งลูกค้า + สแกน QR ลื่น (กลุ่ม B ได้เปรียบ)", "UX มือถือทันสมัย เหมาะหน้าร้าน", "ecosystem JS เดียวจบ"], "cons": ["งาน admin/billing CRUD ต้องประกอบเองมากกว่า"] }
+      {
+        "name": "Laravel (PHP) + Filament",
+        "elapsed": "~3.5–5.5 เดือน",
+        "pros": [
+          "Admin/CRUD ร้าน + billing + dashboard scaffolding เร็ว (กลุ่ม A/C/D ได้เปรียบ)",
+          "โตเต็มที่ เหมาะ multi-tenant + รายงาน",
+          "หา dev ไทยง่าย"
+        ],
+        "cons": [
+          "ส่วน QR/PWA device session ฝั่งลูกค้าต้องทำ frontend เพิ่มเอง"
+        ]
+      },
+      {
+        "name": "Next.js (React/TS)",
+        "elapsed": "~4–6 เดือน",
+        "pros": [
+          "PWA/device session ฝั่งลูกค้า + สแกน QR ลื่น (กลุ่ม B ได้เปรียบ)",
+          "UX มือถือทันสมัย เหมาะหน้าร้าน",
+          "ecosystem JS เดียวจบ"
+        ],
+        "cons": [
+          "งาน admin/billing CRUD ต้องประกอบเองมากกว่า"
+        ]
+      }
     ],
     "verdict": "งานนี้แบ่งเป็นสองฝั่งชัด — ฝั่งจัดการ/บิล (A/C/D) Laravel เร็วกว่า ส่วนฝั่งลูกค้า/QR (B) Next.js เร็วกว่า ผลต่างรวมเล็ก (~10%) เลือกตามทีมที่หาได้จริง หรือทำ hybrid (Laravel API + PWA frontend) ก็ได้"
   },
@@ -122,11 +316,36 @@
     "พนักงานร้านสแกนผ่านเว็บ responsive บนมือถือ ไม่ต้องมี native app แยก"
   ],
   "risks": [
-    { "risk": "พนักงานค้นหา/ผูกลูกค้าผิดคนตอนเปลี่ยนเครื่อง → คูปองไปเข้าผิดคน", "impact": "กลาง", "likelihood": "กลาง", "mitigation": "ค้นด้วยเบอร์+ชื่อ, ยืนยันตัวตนก่อนผูก, เก็บ log ทุกการผูกเครื่อง" },
-    { "risk": "ยืนยัน PromptPay แบบ manual → งานแอดมินเยอะ/ผิดพลาด", "impact": "กลาง", "likelihood": "กลาง", "mitigation": "ออกแบบ flow อัปสลิป + กระทบยอดง่าย, เผื่อต่อ bank API ภายหลัง" },
-    { "risk": "ข้อมูลข้ามร้านรั่ว (tenant isolation)", "impact": "สูง", "likelihood": "ต่ำ", "mitigation": "บังคับ tenant scoping ทุก query + เทสต์เฉพาะ, code review" },
-    { "risk": "ปลอม QR / ใช้คูปองซ้ำ", "impact": "สูง", "likelihood": "กลาง", "mitigation": "signed token + ตรวจสิทธิ์ server-side + redemption idempotent" },
-    { "risk": "ร้านค้างชำระค่าบริการรายวัน", "impact": "กลาง", "likelihood": "กลาง", "mitigation": "auto-suspend + แจ้งเตือนล่วงหน้า + ปลดล็อกเมื่อชำระ" }
+    {
+      "risk": "พนักงานค้นหา/ผูกลูกค้าผิดคนตอนเปลี่ยนเครื่อง → คูปองไปเข้าผิดคน",
+      "impact": "กลาง",
+      "likelihood": "กลาง",
+      "mitigation": "ค้นด้วยเบอร์+ชื่อ, ยืนยันตัวตนก่อนผูก, เก็บ log ทุกการผูกเครื่อง"
+    },
+    {
+      "risk": "ยืนยัน PromptPay แบบ manual → งานแอดมินเยอะ/ผิดพลาด",
+      "impact": "กลาง",
+      "likelihood": "กลาง",
+      "mitigation": "ออกแบบ flow อัปสลิป + กระทบยอดง่าย, เผื่อต่อ bank API ภายหลัง"
+    },
+    {
+      "risk": "ข้อมูลข้ามร้านรั่ว (tenant isolation)",
+      "impact": "สูง",
+      "likelihood": "ต่ำ",
+      "mitigation": "บังคับ tenant scoping ทุก query + เทสต์เฉพาะ, code review"
+    },
+    {
+      "risk": "ปลอม QR / ใช้คูปองซ้ำ",
+      "impact": "สูง",
+      "likelihood": "กลาง",
+      "mitigation": "signed token + ตรวจสิทธิ์ server-side + redemption idempotent"
+    },
+    {
+      "risk": "ร้านค้างชำระค่าบริการรายวัน",
+      "impact": "กลาง",
+      "likelihood": "กลาง",
+      "mitigation": "auto-suspend + แจ้งเตือนล่วงหน้า + ปลดล็อกเมื่อชำระ"
+    }
   ],
   "openQuestions": [
     "ค่าบริการรายวันต่อร้านคิดเท่าไร และมีแพ็กเกจ/tier หลายระดับไหม?",
@@ -143,5 +362,146 @@
     "ค่า SMS / LINE notify (หากเพิ่มภายหลัง)",
     "เนื้อหา / รูปคูปอง & ของรางวัล (ร้านจัดเตรียม)",
     "งานดูแลหลังส่งมอบ (maintenance) — เสนอแยกเป็นสัญญารายปี"
-  ]
+  ],
+  "ai": {
+    "approach": "speedup",
+    "factorNote": "ตัวเร่ง: dev ทั่วไป 3–5x (AI เขียน CRUD/engine/UI เร็ว), งานเชื่อมต่อ/R&D 2–3x (AI เร่งได้น้อยกว่า), งานคน req/UX/PM 1.3–2x, QA/deploy 1.5–2.5x — งานคนกลายเป็นคอขวด",
+    "roleNote": "ผู้ควบคุม AI + รีวิว + เทสต์",
+    "modules": [
+      {
+        "code": "M-01",
+        "aiMdLow": 2,
+        "aiMdHigh": 5,
+        "factor": "3–5x"
+      },
+      {
+        "code": "M-02",
+        "aiMdLow": 1,
+        "aiMdHigh": 3,
+        "factor": "3–5x"
+      },
+      {
+        "code": "M-03",
+        "aiMdLow": 3,
+        "aiMdHigh": 7,
+        "factor": "3–5x"
+      },
+      {
+        "code": "M-04",
+        "aiMdLow": 2,
+        "aiMdHigh": 5,
+        "factor": "3–5x"
+      },
+      {
+        "code": "M-05",
+        "aiMdLow": 3,
+        "aiMdHigh": 6,
+        "factor": "3–5x"
+      },
+      {
+        "code": "M-06",
+        "aiMdLow": 2,
+        "aiMdHigh": 4,
+        "factor": "3–5x"
+      },
+      {
+        "code": "M-07",
+        "aiMdLow": 2,
+        "aiMdHigh": 6,
+        "factor": "3–5x"
+      },
+      {
+        "code": "M-08",
+        "aiMdLow": 2,
+        "aiMdHigh": 5,
+        "factor": "2–3x"
+      },
+      {
+        "code": "M-09",
+        "aiMdLow": 2,
+        "aiMdHigh": 4,
+        "factor": "3–5x"
+      },
+      {
+        "code": "M-10",
+        "aiMdLow": 2,
+        "aiMdHigh": 4,
+        "factor": "3–5x"
+      }
+    ],
+    "support": [
+      {
+        "name": "วิเคราะห์ / ออกแบบระบบ & UX",
+        "aiMdLow": 4,
+        "aiMdHigh": 11
+      },
+      {
+        "name": "ทดสอบ (QA / test)",
+        "aiMdLow": 4,
+        "aiMdHigh": 11
+      },
+      {
+        "name": "ติดตั้ง / ขึ้นระบบ (Deploy / DevOps · multi-tenant)",
+        "aiMdLow": 4,
+        "aiMdHigh": 9
+      },
+      {
+        "name": "จัดการโครงการ (PM)",
+        "aiMdLow": 4,
+        "aiMdHigh": 10
+      }
+    ],
+    "contingencyPct": 25,
+    "rates": [
+      {
+        "label": "Junior",
+        "rate": 2500
+      },
+      {
+        "label": "Mid",
+        "rate": 4000
+      },
+      {
+        "label": "Senior",
+        "rate": 6000
+      },
+      {
+        "label": "Expert",
+        "rate": 8000
+      }
+    ],
+    "summary": {
+      "manDayLow": 46,
+      "manDayHigh": 113,
+      "priceLow": 115000,
+      "priceHigh": 904000,
+      "elapsedNote": "~2–4 เดือน (ทีมเล็ก 1–2 คนคุม AI) เทียบทีมคน"
+    },
+    "assumptions": [
+      "ขับด้วย dev ที่ skill สูง 1 คนต่อ 1 สายงาน + AI coding agent (เช่น Claude Code)",
+      "โค้ดที่ AI สร้างผ่านรีวิว + เทสต์โดยคนก่อนส่งมอบ (วันรีวิว/เทสต์รวมในตัวเลขแล้ว)",
+      "งานออกแบบ/ตัดสินใจ/ความปลอดภัย/integration/R&D AI เร่งได้น้อยกว่า — สะท้อนในตัวเร่งแล้ว",
+      "ขอบเขต/โมดูลเท่าฐานทีมคนเป๊ะ (เทียบ apples-to-apples) เรตเท่าเดิม"
+    ],
+    "risks": [
+      {
+        "risk": "AI สร้างโค้ดผิด/หลอน (hallucination)",
+        "impact": "กลาง",
+        "likelihood": "กลาง",
+        "mitigation": "รีวิว+เทสต์โดยคนทุกงาน วันรีวิวรวมในตัวเลขแล้ว"
+      },
+      {
+        "risk": "งาน integration/edge case/R&D ช้ากว่าคาด",
+        "impact": "กลาง",
+        "likelihood": "กลาง",
+        "mitigation": "ตั้งตัวเร่งอนุรักษ์นิยม (2–3x) + contingency 25%"
+      },
+      {
+        "risk": "คุณภาพขึ้นกับ skill ผู้ควบคุม AI",
+        "impact": "สูง",
+        "likelihood": "กลาง",
+        "mitigation": "ใช้ dev senior ขับ + กำหนดมาตรฐานรีวิว/เทสต์"
+      }
+    ]
+  }
 }
