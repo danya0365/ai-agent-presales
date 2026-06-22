@@ -116,28 +116,21 @@
 
 > **ขอบเขต data ทั้งหมดอยู่ใน `presales/` เท่านั้น** — ทุกครั้งต้องเขียน `data.json`/`output.html`
 > ลงที่ `presales/output/<uuid>/` เท่านั้น ห้ามแตะไฟล์ data นอกเวิร์กสเปซนี้
-> **ข้อยกเว้นเดียว:** แอป render `presales-quotation` (Next.js) ถูกย้ายออกไปอยู่ที่
-> `/Users/marosdeeuma/ai-project/workspaces/presales-quotation/` (คนละ tree) — แก้โค้ดแอปที่นั่นได้
-> แต่ data ยังอ่าน/เขียนที่ `presales/output/` เหมือนเดิม (แอปอ่านผ่าน env `PRESALES_OUTPUT`
-> หรือ default relative path กลับมาที่ `ai-agents/presales/output`)
+> `output.html` เป็นใบเสนอ **standalone** (เปิดในเบราว์เซอร์ได้เลย ไม่ต้องพึ่งแอปอื่น)
 
 **โครงสร้างที่ใช้:**
 ```
 presales/                        ← data เท่านั้น
 ├── input/<project-slug>/        ← โจทย์ของแต่ละโปรเจกต์ (รูป/pdf/notes.md) — พี่วางเอง หรือ Inline mode สร้างให้อัตโนมัติ
-└── output/<uuid-v7>/            ← เหลือเฉพาะโฟลเดอร์ uuid (ไม่มีโค้ดแอปปนแล้ว)
-    ├── output.html              ← ใบเสนอ standalone (HTML+CSS โทนกลาง เปิดได้เลย)
-    └── data.json                ← ข้อมูลมีโครงสร้าง (ให้เว็บ Next render)
-
-/Users/marosdeeuma/ai-project/workspaces/presales-quotation/   ← Next.js 16 app (App Router, Tailwind v4, TS) — แยกออกนอก presales
-└── app/
-    ├── lib/projects.ts          ← อ่าน data.json ทุกโปรเจกต์จาก presales/output + type + ตัวช่วยคำนวณ (getProject/getAllProjects/totals/fmtTHB)
-    ├── project/page.tsx              ← index ลิสต์ทุกโปรเจกต์
-    └── project/[id]/page.tsx         ← render ใบประเมิน 1 โปรเจกต์จาก data.json
+└── output/<uuid-v7>/            ← ผลงาน 1 โปรเจกต์ (โฟลเดอร์ uuid)
+    ├── output.html              ← ใบเสนอ standalone (HTML+CSS โทนกลาง เปิดในเบราว์เซอร์ได้เลย)
+    └── data.json                ← ข้อมูลมีโครงสร้าง (อ้างอิง/ส่งต่อภายใน)
 ```
 
 **ขั้นตอน (ทำทีละโปรเจกต์ แล้วหยุดรายงาน — ไม่ทำรวดเดียวทั้งหมด):**
 0. 🧭 **เลือกโหมดจากคำสั่งของพี่ก่อน:**
+   - **สั่งให้ดึงงานจาก intake / mission-control** (เช่น "ดึง lead ที่อนุมัติแล้วมาตีราคา",
+     หรือ foreman มอบงาน `quote-from-requirement`) → **API mode** (ดู §0.5 ด้านล่าง)
    - **มีชื่อระบบ/โจทย์อยู่ในคำสั่ง** (เช่น "ช่วยประเมินราคา **ระบบคูปอง** ให้หน่อย") → **Inline mode**
      - ใช้ข้อความในคำสั่งเป็นโจทย์ → **ข้ามการสแกน/อ่าน `input/` (ข้อ 1) ไปเลย**
      - สร้าง `input/<slug>/notes.md` บันทึกโจทย์ไว้ก่อน (พี่ไม่ต้องวางไฟล์เอง) ·
@@ -145,6 +138,17 @@ presales/                        ← data เท่านั้น
      - ถ้า `<slug>` ซ้ำกับโปรเจกต์ที่มี output แล้ว → **ทักพี่ก่อน** (อาจเป็นงานเดิม)
      - ข้ามไปทำต่อที่ **เกตเช็ก requirement (ข้อ 2)** ได้เลย
    - **สั่งลอย ๆ ไม่มีชื่อระบบ** ("ช่วยประเมินราคาหน่อย" / "ช่วยเริ่มงานหน่อย") → **Folder mode** → ทำข้อ 1 ตามปกติ
+0.5 🆕 **API mode — รับ requirement จาก intake (ฮัมซะห์) ผ่าน mission-control:**
+   หัวสายพานตอนนี้มี agent **intake (ฮัมซะห์)** สวมบทลูกค้าสร้างโจทย์ → พี่กด **approve** บน dashboard →
+   โจทย์ที่อนุมัติแล้วรอฉันมาตีราคา ฉันดึงผ่าน API (ไม่ใช่โฟลเดอร์):
+   ```bash
+   curl -sS "$MISSION_CONTROL_URL/api/requirements?status=approved&unconverted=true" \
+     -H "Authorization: Bearer $AGENT_API_KEY"
+   ```
+   - เลือก **1 อัน** → ใช้ฟิลด์ของมัน (`projectName, brief, painPoints, mustHaves, niceToHaves, budgetHint, timelineHint`)
+     เป็น "โจทย์ต้นทาง" **เหมือน Inline mode** → สร้าง `input/<slug>/notes.md` บันทึกโจทย์ไว้ (ร่องรอยครบ)
+   - `<slug>` = ชื่อระบบ kebab-case · `source = "input/<slug>"` · **จำ `requirement.id` ไว้** (ใช้ตอนปิดงานข้อ 5.6)
+   - แล้วไปทำต่อที่ **เกตเช็ก requirement (ข้อ 2)** → 3 สเตปตามปกติ
 1. สแกน `presales/input/` หาโฟลเดอร์โปรเจกต์ ที่ยัง **ไม่มีใน** `output/*/data.json` (เทียบจากฟิลด์ `source`)
 2. เลือก **1 โปรเจกต์** ที่ยังไม่ทำ → อ่านเอกสารต้นทางในโฟลเดอร์นั้น
    > 🚦 **เกตเช็ก requirement (ก่อนลงมือสเตป 3) — ใช้ได้ทั้ง Folder & Inline mode · ถามก่อนเดาเมื่อโจทย์บางเกินไป:**
@@ -158,7 +162,7 @@ presales/                        ← data เท่านั้น
    ตีราคา (ตาม [templates/cost-estimation.md](templates/cost-estimation.md)) — **ไม่ต้องถามเรต man-day**
    > 🤖 **ทำสเตป 3.5 (โหมด AI) ด้วยทุกครั้ง** — เติมบล็อก `ai{}` ลง `data.json` (ตัวเร่ง default, contingency 25%, เรตเท่าเดิม) เพื่อเทียบ คน vs AI
    > 📐 **โครงเอกสาร (section + ลำดับ + field) ต้องยึด [templates/document-spec.md](templates/document-spec.md) เป็นแหล่งความจริงเดียว**
-   > ทั้ง `data.json`, `output.html` และเว็บ React ต้องตรงกัน — **ห้าม improvise โครง/หัวข้อ/เนื้อหาเอง**
+   > ทั้ง `data.json` และ `output.html` ต้องตรงกัน — **ห้าม improvise โครง/หัวข้อ/เนื้อหาเอง**
    ใส่เรต default 4 ระดับลง `rates[]` อัตโนมัติ: Junior 2,500 / Mid 4,000 / Senior 6,000 / Expert 8,000 (บาท/วัน)
    **ยกเว้น** พี่ระบุเรตเองมา → ใช้เฉพาะเรตที่พี่กำหนด (override default) · **เรื่องเรต = สั่งครั้งเดียวจบ ไม่ต้องถามกลับ**
    (คนละเรื่องกับเกตเช็ก requirement ด้านบน — เกตนั้นถามได้เมื่อโจทย์บางเกินจะตีราคา)
@@ -175,7 +179,7 @@ presales/                        ← data เท่านั้น
      modules[]{group,code,name,desc,complexity,mdLow,mdHigh}, nonFunctional[]{key,label,detail}, support[]{name,mdLow,mdHigh}, contingencyPct, rates[]{label,rate},
      groupLegend, timeline{teamAssumption,elapsedNote,stacks[],verdict}, phasing, assumptions[], risks[], openQuestions[], outOfPrice[],
      ai{approach:"speedup", factorNote, roleNote, modules[]{code,aiMdLow,aiMdHigh,factor}, support[]{name,aiMdLow,aiMdHigh}, contingencyPct:25, rates[]{label,rate}, summary{manDayLow,manDayHigh,priceLow,priceHigh,elapsedNote}, assumptions[], risks[]}`
-   - `output.html` — ใบเสนอ standalone ที่ **โครงต้องตรงกับ [templates/document-spec.md](templates/document-spec.md) เป๊ะ** (section 1–9 เรียงเหมือน React + สารบัญ sticky + scroll-spy) — **ห้าม improvise โครง/เนื้อหา ทุกอย่างมาจาก data.json**
+   - `output.html` — ใบเสนอ standalone ที่ **โครงต้องตรงกับ [templates/document-spec.md](templates/document-spec.md) เป๊ะ** (section 1–9 + สารบัญ sticky + scroll-spy ในไฟล์เดียว เปิดในเบราว์เซอร์ได้เลย) — **ห้าม improvise โครง/เนื้อหา ทุกอย่างมาจาก data.json**
    - ฟิลด์ `source` ต้อง = `"input/<project-slug>"` เพื่อกันการทำซ้ำ
 5.5 🤝 **ส่งดีลเข้า mission-control (ศูนย์กลางสายพาน) ผ่าน API — แทนการเขียน `handoff.json` local:**
    pipeline state ทั้งหมด (สถานะดีล/การส่งต่อ) ย้ายไปอยู่ที่ **mission-control (REST API + DB cloud)** แล้ว
@@ -197,32 +201,30 @@ presales/                        ← data เท่านั้น
    - **env ที่ต้องมี:** `MISSION_CONTROL_URL` (เช่น `http://localhost:3000` หรือ URL prod) + `AGENT_API_KEY`
    - **upsert ด้วย `quotationId`** — ยิงซ้ำได้ ไม่สร้างดีลซ้ำ · ถ้า curl ไม่ผ่าน (เช่น API ล่ม) → **รายงานพี่ ไม่เงียบ**
    - **เลิกเขียน `handoff.json` local แล้ว** — source of truth ของ pipeline = DB ของ mission-control
-   - `data.json` + `output.html` ยัง immutable + ยังขึ้น presales-quotation เหมือนเดิม (คนละเรื่องกับ pipeline)
+   - `data.json` + `output.html` immutable เก็บใน `presales/output/<uuid>/` (เป็นผลงานของฉันเอง · ไม่ขึ้นเว็บแอปแล้ว — presales-quotation แยกเป็นโปรเจกต์อิสระ)
    > 🔭 หมายเหตุ distributed: ตอนนี้ manager ยังอ่าน `data.json` จากเครื่องเดียวกันเพื่อแตก backlog · เมื่อแยกเครื่องจริง
-   > ค่อยขยาย API ให้ส่ง quotation detail ตามไปด้วย (ฟิลด์ `quotationData`) — ดู mission-control roadmap
-6. 🚀 **Sync + deploy ขึ้น Next.js/Vercel (บังคับ — ห้ามข้าม):**
-   route เป็น generic → **ไม่ต้องแก้โค้ด Next "ต่อโปรเจกต์"** จริง แต่ **"ต้อง" sync data เข้าแอป + push
-   ให้ Vercel เห็น** ไม่งั้นเว็บจริง (`presales-quotation.vercel.app`) จะไม่เห็นโปรเจกต์ใหม่
-   เพราะ Vercel อ่านจาก snapshot `data/` ในแอป ไม่ได้อ่าน `presales/output` สด
+   > manager จะ GET ใบเสนอจาก `GET /api/deals/<id>/quotation` แทน (§5.7 PUT `data.json` เข้า MC แล้ว)
+5.6 🔗 **(API mode เท่านั้น) มาร์ค requirement ว่าแปลงเป็น deal แล้ว — กันหยิบซ้ำ:**
+   ถ้างานนี้มาจาก §0.5 (มี `requirement.id`) หลัง POST ดีลสำเร็จ ให้ผูก dealId กลับเข้า requirement:
+   ```bash
+   curl -sS -X PATCH "$MISSION_CONTROL_URL/api/requirements/<requirement.id>" \
+     -H "Authorization: Bearer $AGENT_API_KEY" -H "Content-Type: application/json" \
+     -d '{ "dealId": "<quotationId เดียวกับดีล>" }'
    ```
-   cd /Users/marosdeeuma/ai-project/workspaces/presales-quotation
-   npm run sync:data        # ก๊อป data.json ทุกใบ presales/output → ./data (snapshot ที่ Vercel ใช้)
-   npm run build            # ต้องผ่านก่อน
-   git add -A && git commit -m "Add quotation: <projectName>" && git push   # Vercel auto-redeploy
+   - ทำให้ requirement หลุดจากคิว `/api/work` (ไม่ถูกตีราคาซ้ำ) · ถ้า PATCH ไม่ผ่าน → รายงานพี่
+5.7 📄 **ส่งใบเสนอเข้า mission-control (ให้ดูใบเสนอ native บน dashboard ได้):**
+   PUT `data.json` ทั้งก้อนเข้า MC — เพื่อให้ CEO/พี่กดอ่านใบเสนอเต็มใบบน mission-control ได้ทันที (ไม่ต้องเปิด `output.html` เอง)
+   ```bash
+   curl -sS -X PUT "$MISSION_CONTROL_URL/api/deals/<quotationId>/quotation" \
+     -H "Authorization: Bearer $AGENT_API_KEY" -H "Content-Type: application/json" \
+     --data-binary @"presales/output/<uuid>/data.json"
    ```
-   - **ทำทุกครั้งที่สร้าง/แก้ใบประเมิน** · ข้อมูลขึ้นเว็บ public (พี่ยอมรับแล้ว)
-   - ถ้า build ไม่ผ่าน หรือ schema มีฟิลด์ใหม่ที่หน้ายัง render ไม่ครบ → แก้ `ProjectView.tsx`/`output.html`
-     ให้ตรง [templates/document-spec.md](templates/document-spec.md) ก่อน (นี่คือกรณีเดียวที่ต้อง "แก้โค้ด Next")
-7. **หยุดและรายงานพี่**: ชื่อโปรเจกต์, uuid, ช่วงราคา, path ไฟล์, และ **URL จริงบน Vercel**
-   `https://presales-quotation.vercel.app/project/<uuid>` (ลูกค้า) + `…/project/<uuid>/internal` (ทีม) — ไม่ไปทำตัวถัดไปเอง
+   - ต้อง **POST ดีลก่อน (§5)** แล้วค่อย PUT ใบเสนอ (quotation ผูก 1:1 กับดีล) · ยิงซ้ำได้ (upsert ทับของเดิม) · ถ้าไม่ผ่าน → รายงานพี่
+   - เปิดดูที่ `$MISSION_CONTROL_URL/project/<quotationId>/quotation` (หรือปุ่ม "📄 ดูใบเสนอราคา" บนหน้าดีล)
+6. **หยุดและรายงานพี่**: ชื่อโปรเจกต์, uuid, ช่วงราคา, และ **path ของใบเสนอ** `ai-agents/presales/output/<uuid>/output.html`
+   (เปิดในเบราว์เซอร์ดูได้เลย) + 🔗 **ใบเสนอบน mission-control:** `$MISSION_CONTROL_URL/project/<uuid>/quotation` — ไม่ไปทำตัวถัดไปเอง
    - บอกพี่ด้วยว่า **ดีลถูกส่งเข้า mission-control แล้ว (สถานะ `quoted`)** — **ถ้าดีลปิด พี่กดปุ่ม `อนุมัติ` บน
      dashboard** (`$MISSION_CONTROL_URL`) แล้วฝั่ง manager (อุมัร) จะ GET ดีลที่ approved ไปแตก backlog ต่อ
 
-**ข้อควรระวังด้านเทคนิค (Next.js 16.2.9 — มี breaking changes):**
-- แอปอยู่ที่ `/Users/marosdeeuma/ai-project/workspaces/presales-quotation/` (ไม่ใช่ใน presales แล้ว)
-- ก่อนแก้โค้ด Next อ่าน docs ใน `workspaces/presales-quotation/node_modules/next/dist/docs/` ก่อน
-- `params` ในหน้าเป็น `Promise` → ต้อง `await params`
-- หน้าที่อ่านไฟล์ (Server Component) ใส่ `export const dynamic = "force-dynamic"`
-- รัน/ตรวจ: `cd /Users/marosdeeuma/ai-project/workspaces/presales-quotation && npm run build` (ต้องผ่าน) แล้ว `npm run start` เปิด `/project`
-- **`npm run sync:data` = สะพานเชื่อม** `presales/output/*/data.json` (ของจริง local) → `data/` (snapshot ที่ Vercel/production อ่าน) · ต้องรัน + push ทุกครั้งหลังสร้าง/แก้ใบประเมิน ไม่งั้น Vercel ไม่อัปเดต
-- local dev (`npm run dev`) อ่าน `presales/output` สดอยู่แล้ว — แต่ **Vercel ไม่ใช่** ต้อง sync:data เสมอ
+> 📎 **presales-quotation (เว็บแสดงใบเสนอ) แยกเป็นโปรเจกต์อิสระแล้ว** — ฉันไม่ sync/deploy ขึ้นเว็บนั้นอีก
+> deliverable ของฉัน = `output.html` standalone + ดีลใน mission-control (พร้อมใบเสนอ native ที่ PUT เข้า §5.7) เท่านั้น

@@ -13,7 +13,7 @@ Desktop.ini
 *.swo
 *~
 
-# === Node (เผื่อเผลอรัน npm ในโฟลเดอร์นี้ — แอป Next จริงอยู่ workspaces/presales-quotation) ===
+# === Node (เผื่อเผลอรัน npm — โฟลเดอร์นี้เก็บแค่ data + SOP ไม่มีแอป) ===
 node_modules/
 npm-debug.log*
 .next/
