@@ -28,11 +28,11 @@ Section หลัก (เลข 1–9 ตายตัว · `output.html` แล
 | 4 | `usecases` | Use Case หลัก | `useCases[]{title, actor?, desc}` | ✅ เต็ม |
 | 5 | `modules` | โมดูล / ฟีเจอร์ | `modules[]`, `groupLegend` | ⚠️ เห็นแค่ `name`+`desc` — ซ่อนคอลัมน์ `group`,`code`,`complexity`,`mdLow`,`mdHigh`, แถว subtotal, `groupLegend` |
 | 6 | `nonfunc` | ความต้องการ Non-functional | `nonFunctional[]{key, label, detail?}` | ✅ เต็ม |
-| 7 | `timeline` | Timeline & เทียบ Stack | `timeline{teamAssumption, elapsedNote, stacks[], verdict}` | ❌ **ซ่อนทั้ง section** |
+| 7 | `timeline` | แผนงาน & Timeline | `schedule{unit?, daysPerWeek?, note?, phases[]{name, startDay, endDay, group?, items[]}}`, `timeline{teamAssumption, elapsedNote, stacks[], verdict}` | ⚠️ เห็นเฉพาะ **`schedule`** (Gantt + ไทม์ไลน์แนวตั้ง) — ซ่อน `timeline`/เทียบ stack |
 | 8 | `cost` | ค่าใช้จ่าย & ราคา | `support[]`, `rates[]`, `contingencyPct`, `phasing`, **`ai{}`** + คำนวณด้วย `totals()`,`sumMd()`,`aiTotals()` | ⚠️ เห็นแค่กล่องสรุปช่วงราคา — ซ่อนตาราง support/man-day/ตารางเรต, `phasing` **และบล็อก AI ทั้งหมด** |
 | 9 | `notes` | สมมติฐาน · ความเสี่ยง · คำถาม · สิ่งที่ไม่รวมราคา | `assumptions[]`, `risks[]`, `openQuestions[]`, `outOfPrice[]` | ✅ — clean รหัส `(M-0x)` ออกจาก free-text, หัวข้อ "คำถามที่ต้องถามลูกค้าเพิ่ม" → "ข้อมูลที่ต้องการเพิ่มเติม" |
 
-**กติกาเลข section:** internal เห็น 1–9 ครบ · client ซ่อน §7 (timeline) แล้ว **รันเลขใหม่ต่อเนื่อง** (client จะมี 8 section เลข 1–8)
+**กติกาเลข section:** internal เห็น 1–9 ครบ · client **เห็น §7 (เฉพาะ `schedule`)** แต่ซ่อนส่วน `timeline`/เทียบ stack — section ยังครบ 1–9 ทั้ง internal/client (ไม่ต้องรันเลขใหม่)
 **ห้ามใส่:** ตาราง "วิเคราะห์รูปที่ 1–3" / เนื้อหา intake เฉพาะงาน — ไม่ใช่ section มาตรฐาน
 
 ### บล็อกย่อย "ทางเลือก: ให้ AI เขียนโค้ด" (อยู่ใน §8 `cost` — ไม่ใช่ section ใหม่)
@@ -41,6 +41,18 @@ Section หลัก (เลข 1–9 ตายตัว · `output.html` แล
 - **เงื่อนไขแสดง:** เมื่อ `p.ai` มีค่า **และ `audience==="internal"` เท่านั้น** → **client ไม่เห็น** (เหมือน §7 timeline) เอกสารลูกค้าเดิมไม่เปลี่ยน
 - **เนื้อหา (จาก `ai{}`):** การ์ดเทียบ คน vs AI (man-day/เวลา/ราคา) · ตาราง AI man-day→ราคา (`aiTotals()`+`ai.rates`) · ตารางตัวเร่งราย module (ผูก `ai.modules[].code` กับ `modules[]` เดิม) · `ai.assumptions[]` · `ai.risks[]`
 - **กฎเหล็ก:** AI man-day ทุกตัวต้องมี `factor` กำกับ (ที่มาของวันที่ลด) · เรต `ai.rates` = เรตคนเท่าเดิม
+
+### บล็อกย่อย "แผนงานโปรเจกต์ (schedule)" — อยู่บนสุดของ §7 `timeline`
+> กำหนดการส่งมอบตามเวลา — **กำหนดการของโปรเจกต์ ไม่ใช่ timeline ของ AI agent** · โชว์ทั้ง client + internal (ไม่มีข้อมูลอ่อนไหว)
+- **ตำแหน่ง:** บนสุดของ §7 (ก่อนส่วนเทียบ stack ที่ client ซ่อน) · ไม่เพิ่ม section ใหม่
+- **เงื่อนไขแสดง:** เมื่อ `schedule.phases` มีค่า (ทั้ง client + internal)
+- **ข้อมูล (`schedule`):** `phases[]` ~4–6 เฟส แบ่งตามกลุ่มโมดูล (A/B/...) + เฟสปิดท้าย QA/UAT/Deploy ·
+  วันเป็น **relative working day** (วันที่ 1 = วันเริ่มจริง ไม่ผูกปฏิทิน) · `daysPerWeek` default 5 ·
+  ช่วงวันรวมประมาณจาก man-day ÷ ขนาดทีม (effective heads) · เฟสซ้อนเหลื่อมกันได้เล็กน้อย
+- **render 2 มุมมองต่อกัน:**
+  1. **Gantt แนวนอน** — แถว = เฟส · แกน = สัปดาห์ · แท่งสีตามช่วงวัน · ชื่อเฟส sticky ซ้าย · เลื่อนข้างได้เมื่อวันเยอะ
+  2. **ไทม์ไลน์แนวตั้ง** — แต่ละเฟส = step (จุด+เส้น) โชว์ "วัน X–Y" + ชื่อเฟส + bullet `items[]`
+- **HTML standalone:** แท่ง Gantt วางด้วย `left/width` เป็น **%** ของช่วงเวลาทั้งหมด (responsive) · กล่องเลื่อนข้าง `overflow-x:auto`
 
 ---
 

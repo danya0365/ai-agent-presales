@@ -305,6 +305,67 @@
     "phase1": "Coupon MVP (กลุ่ม A บางส่วน + B ทั้งหมด): คูปอง + ของรางวัล + QR/device session + redemption หน้าร้าน ใช้ได้จริงกับร้านนำร่อง → ~70–115 man-day (รวม support + contingency) ≈ 175,000–920,000 บาท (ตามเรต Junior–Expert)",
     "phase2": "Multi-tenant เต็ม + billing รายวัน + PromptPay + Platform Admin dashboard (กลุ่ม C/D) — ตีราคาแม่นเมื่อยืนยันโมเดลค่าบริการและจำนวนร้าน"
   },
+  "schedule": {
+    "unit": "day",
+    "daysPerWeek": 5,
+    "note": "ประเมินแบบทีม freelance 2–3 คน (~2 effective heads) วันทำงาน จ–ศ · วันเป็น relative (วันที่ 1 = วันเริ่มจริง) เฟสซ้อนเหลื่อมได้เล็กน้อย",
+    "phases": [
+      {
+        "name": "Platform & Tenant",
+        "group": "A",
+        "startDay": 1,
+        "endDay": 20,
+        "items": [
+          "วาง multi-tenant schema (tenant_id) + base infra",
+          "auth/RBAC เจ้าของร้าน + พนักงาน",
+          "โครง UI หลัง + ระบบจัดการร้าน"
+        ]
+      },
+      {
+        "name": "Coupon Engine",
+        "group": "B",
+        "startDay": 18,
+        "endDay": 45,
+        "items": [
+          "ออกคูปอง/ของรางวัล + เงื่อนไขแลก",
+          "QR redeem หน้าร้าน + device session ลูกค้า",
+          "ค้นหา/ผูกเครื่องใหม่ให้ลูกค้า (คูปองไม่หาย)"
+        ]
+      },
+      {
+        "name": "Billing & Payment",
+        "group": "C",
+        "startDay": 40,
+        "endDay": 62,
+        "items": [
+          "คิดค่าบริการรายวัน (subscription SaaS)",
+          "PromptPay QR (EMVCo) + อัปสลิป/แอดมินยืนยัน",
+          "ประวัติบิล + แจ้งเตือนใกล้หมดอายุ"
+        ]
+      },
+      {
+        "name": "Dashboard & Report",
+        "group": "D",
+        "startDay": 55,
+        "endDay": 75,
+        "items": [
+          "แดชบอร์ดเจ้าของร้าน (คูปองออก/ถูกใช้, redemption rate)",
+          "รายงานยอดของรางวัล + รายได้ค่าบริการ",
+          "Platform admin (ภาพรวมหลายร้าน)"
+        ]
+      },
+      {
+        "name": "QA · UAT · Deploy",
+        "startDay": 70,
+        "endDay": 88,
+        "items": [
+          "เทสรวมทั้งระบบ + แก้บั๊ก",
+          "UAT กับร้านนำร่อง",
+          "deploy production + ส่งมอบ + เอกสารใช้งาน"
+        ]
+      }
+    ]
+  },
   "assumptions": [
     "ลูกค้าปลายทางไม่มีระบบ login เต็ม — คูปองเก็บฝั่ง server ผูกกับทะเบียนลูกค้าเบื้องต้น (ชื่อ/เบอร์) ของแต่ละร้าน; session เป็น device-bound token (localStorage/PWA); เปลี่ยนเครื่อง = พนักงานค้นหาลูกค้าแล้วผูกเครื่องใหม่ คูปองไม่หาย",
     "เก็บข้อมูลลูกค้าขั้นต่ำ (ชื่อ/เบอร์) ตอนสแกนครั้งแรกเพื่อให้พนักงานค้นหา/ผูกเครื่องใหม่ได้ — ต้องมี consent ตาม PDPA ที่หน้าร้าน",

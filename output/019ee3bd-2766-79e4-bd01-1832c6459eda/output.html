@@ -179,7 +179,38 @@
     section{box-shadow:none;border:1px solid #ccc;break-inside:avoid;}
     header.hero{background:var(--teal-dark)!important;-webkit-print-color-adjust:exact;print-color-adjust:exact;}
     thead th,tr.grand td,.price-hero{-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+    .gantt-wrap{overflow-x:visible;}.gantt{min-width:0;}
   }
+  /* ===== แผนงานโปรเจกต์ (schedule): Gantt + ไทม์ไลน์ ===== */
+  .sched{margin:4px 0 6px;}
+  .sched-h{font-size:1.05rem;color:var(--teal-dark);margin:0 0 4px;font-weight:700;}
+  .sched-note{font-size:.85rem;color:var(--ink-soft);margin:0 0 12px;}
+  .gantt-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:12px;background:#fff;}
+  .gantt{min-width:1260px;}
+  .gantt-head,.gantt-row{display:flex;align-items:stretch;}
+  .gantt-head{background:#F7F4EC;border-bottom:1px solid var(--line);}
+  .gantt-name{position:sticky;left:0;z-index:2;flex:0 0 180px;width:180px;padding:8px 12px;
+    background:#fff;border-right:1px solid var(--line);}
+  .gantt-head .gantt-name{background:#F7F4EC;font-weight:700;color:var(--teal-dark);font-size:.85rem;
+    display:flex;align-items:center;}
+  .gantt-row .gantt-name{border-top:1px solid var(--line);}
+  .gantt-name .pn{font-weight:600;color:var(--ink);font-size:.88rem;}
+  .gantt-name .pd{font-size:.76rem;color:var(--ink-soft);}
+  .gantt-axis{display:flex;}
+  .gantt-wk{flex:0 0 60px;width:60px;text-align:center;font-size:.7rem;color:var(--ink-soft);
+    padding:8px 0;border-left:1px solid var(--line);}
+  .gantt-track{position:relative;flex:0 0 1080px;width:1080px;height:36px;border-top:1px solid var(--line);
+    background:repeating-linear-gradient(90deg,transparent 0 59px,var(--line) 59px 60px);}
+  .gantt-bar{position:absolute;top:7px;height:22px;border-radius:6px;box-shadow:var(--shadow);}
+  .sched-steps{list-style:none;margin:18px 0 0;padding:0;}
+  .sched-step{position:relative;padding:0 0 14px 22px;border-left:2px solid var(--line);margin-left:5px;}
+  .sched-step:last-child{border-left-color:transparent;padding-bottom:0;}
+  .sched-step .dot{position:absolute;left:-7px;top:3px;width:12px;height:12px;border-radius:50%;
+    border:2px solid var(--card);}
+  .sched-step .st{font-weight:600;color:var(--ink);font-size:.95rem;}
+  .sched-step .st .sd{color:var(--ink-soft);font-weight:400;}
+  .sched-step ul{margin:4px 0 0;padding-left:18px;}
+  .sched-step li{font-size:.86rem;color:var(--ink-soft);margin:2px 0;}
 </style>
 </head>
 <body>
@@ -348,6 +379,67 @@
   <h2 class="sec-title"><span class="sec-num">7</span> Timeline &amp; เปรียบเทียบ Stack</h2>
   <p class="sec-sub">ทีม freelance 2–3 คน (full-stack 2 + PM/QA แชร์ · ~2 effective heads)</p>
   <p>Effort รวม ~134–222 man-day → ระยะเวลาจริงราว 3.5–6 เดือน</p>
+
+  <!-- แผนงานโปรเจกต์ (schedule) — Gantt + ไทม์ไลน์ -->
+  <div class="sched">
+    <h3 class="sched-h">📅 แผนงานโปรเจกต์ (กำหนดการส่งมอบ)</h3>
+    <p class="sched-note">วันแบบ relative working day (วันที่ 1 = วันเริ่มจริง · จ–ศ) · ทีม ~2 effective heads · รวม ~88 วันทำงาน (~18 สัปดาห์) · เฟสซ้อนเหลื่อมกันได้เล็กน้อย</p>
+
+    <div class="gantt-wrap">
+      <div class="gantt">
+        <div class="gantt-head">
+          <div class="gantt-name">เฟส</div>
+          <div class="gantt-axis">
+            <div class="gantt-wk">ส.1</div><div class="gantt-wk">ส.2</div><div class="gantt-wk">ส.3</div><div class="gantt-wk">ส.4</div><div class="gantt-wk">ส.5</div><div class="gantt-wk">ส.6</div><div class="gantt-wk">ส.7</div><div class="gantt-wk">ส.8</div><div class="gantt-wk">ส.9</div><div class="gantt-wk">ส.10</div><div class="gantt-wk">ส.11</div><div class="gantt-wk">ส.12</div><div class="gantt-wk">ส.13</div><div class="gantt-wk">ส.14</div><div class="gantt-wk">ส.15</div><div class="gantt-wk">ส.16</div><div class="gantt-wk">ส.17</div><div class="gantt-wk">ส.18</div>
+          </div>
+        </div>
+        <div class="gantt-row">
+          <div class="gantt-name"><div class="pn">Platform &amp; Tenant</div><div class="pd">วัน 1–20</div></div>
+          <div class="gantt-track"><span class="gantt-bar" style="left:0%;width:22.7%;background:var(--teal)"></span></div>
+        </div>
+        <div class="gantt-row">
+          <div class="gantt-name"><div class="pn">Coupon Engine</div><div class="pd">วัน 18–45</div></div>
+          <div class="gantt-track"><span class="gantt-bar" style="left:19.3%;width:31.8%;background:var(--amber)"></span></div>
+        </div>
+        <div class="gantt-row">
+          <div class="gantt-name"><div class="pn">Billing &amp; Payment</div><div class="pd">วัน 40–62</div></div>
+          <div class="gantt-track"><span class="gantt-bar" style="left:44.3%;width:26.1%;background:var(--green)"></span></div>
+        </div>
+        <div class="gantt-row">
+          <div class="gantt-name"><div class="pn">Dashboard &amp; Report</div><div class="pd">วัน 55–75</div></div>
+          <div class="gantt-track"><span class="gantt-bar" style="left:61.4%;width:23.9%;background:var(--teal-dark)"></span></div>
+        </div>
+        <div class="gantt-row">
+          <div class="gantt-name"><div class="pn">QA · UAT · Deploy</div><div class="pd">วัน 70–88</div></div>
+          <div class="gantt-track"><span class="gantt-bar" style="left:78.4%;width:21.6%;background:var(--red)"></span></div>
+        </div>
+      </div>
+    </div>
+
+    <ol class="sched-steps">
+      <li class="sched-step"><span class="dot" style="background:var(--teal)"></span>
+        <div class="st"><span class="sd">วัน 1–20 · </span>Platform &amp; Tenant</div>
+        <ul><li>วาง multi-tenant schema (tenant_id) + base infra</li><li>auth/RBAC เจ้าของร้าน + พนักงาน</li><li>โครง UI หลัง + ระบบจัดการร้าน</li></ul>
+      </li>
+      <li class="sched-step"><span class="dot" style="background:var(--amber)"></span>
+        <div class="st"><span class="sd">วัน 18–45 · </span>Coupon Engine</div>
+        <ul><li>ออกคูปอง/ของรางวัล + เงื่อนไขแลก</li><li>QR redeem หน้าร้าน + device session ลูกค้า</li><li>ค้นหา/ผูกเครื่องใหม่ให้ลูกค้า (คูปองไม่หาย)</li></ul>
+      </li>
+      <li class="sched-step"><span class="dot" style="background:var(--green)"></span>
+        <div class="st"><span class="sd">วัน 40–62 · </span>Billing &amp; Payment</div>
+        <ul><li>คิดค่าบริการรายวัน (subscription SaaS)</li><li>PromptPay QR (EMVCo) + อัปสลิป/แอดมินยืนยัน</li><li>ประวัติบิล + แจ้งเตือนใกล้หมดอายุ</li></ul>
+      </li>
+      <li class="sched-step"><span class="dot" style="background:var(--teal-dark)"></span>
+        <div class="st"><span class="sd">วัน 55–75 · </span>Dashboard &amp; Report</div>
+        <ul><li>แดชบอร์ดเจ้าของร้าน (คูปองออก/ถูกใช้, redemption rate)</li><li>รายงานยอดของรางวัล + รายได้ค่าบริการ</li><li>Platform admin (ภาพรวมหลายร้าน)</li></ul>
+      </li>
+      <li class="sched-step"><span class="dot" style="background:var(--red)"></span>
+        <div class="st"><span class="sd">วัน 70–88 · </span>QA · UAT · Deploy</div>
+        <ul><li>เทสรวมทั้งระบบ + แก้บั๊ก</li><li>UAT กับร้านนำร่อง</li><li>deploy production + ส่งมอบ + เอกสารใช้งาน</li></ul>
+      </li>
+    </ol>
+  </div>
+
   <div class="stack-grid">
     <div class="stack-card laravel">
       <h4 class="tname">▲ Laravel (PHP) + Filament</h4>

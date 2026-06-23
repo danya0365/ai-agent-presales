@@ -177,8 +177,12 @@ presales/                        ← data เท่านั้น
    - `data.json` — ตาม schema (ดูตัวอย่างจริงในโฟลเดอร์ output ที่มีอยู่): `id, projectName, client, date, source, currency,
      summary{scopeNote,manDayLow,manDayHigh,priceLow,priceHigh}, overview, businessGoal, actors[], useCases[]{title,actor,desc}, scope{in[],out[]},
      modules[]{group,code,name,desc,complexity,mdLow,mdHigh}, nonFunctional[]{key,label,detail}, support[]{name,mdLow,mdHigh}, contingencyPct, rates[]{label,rate},
-     groupLegend, timeline{teamAssumption,elapsedNote,stacks[],verdict}, phasing, assumptions[], risks[], openQuestions[], outOfPrice[],
+     groupLegend, timeline{teamAssumption,elapsedNote,stacks[],verdict}, phasing,
+     schedule{unit:"day", daysPerWeek:5, note, phases[]{name,startDay,endDay,group?,items[]}}, assumptions[], risks[], openQuestions[], outOfPrice[],
      ai{approach:"speedup", factorNote, roleNote, modules[]{code,aiMdLow,aiMdHigh,factor}, support[]{name,aiMdLow,aiMdHigh}, contingencyPct:25, rates[]{label,rate}, summary{manDayLow,manDayHigh,priceLow,priceHigh,elapsedNote}, assumptions[], risks[]}`
+     > 📅 **`schedule` (แผนงานโปรเจกต์ — บังคับทำ):** ~4–6 เฟสแบ่งตามกลุ่มโมดูล (A/B/...) + เฟสปิดท้าย QA/UAT/Deploy ·
+     > วันเป็น **relative working day** (วันที่ 1 = วันเริ่มจริง) · ช่วงวันรวมประมาณจาก man-day ÷ ขนาดทีม (effective heads) · เฟสซ้อนเหลื่อมเล็กน้อยได้ ·
+     > render เป็น Gantt + ไทม์ไลน์แนวตั้งใน §7 (ดู `templates/document-spec.md` บล็อก "แผนงานโปรเจกต์") — **ไม่ใช่ timeline ของ AI agent**
    - `output.html` — ใบเสนอ standalone ที่ **โครงต้องตรงกับ [templates/document-spec.md](templates/document-spec.md) เป๊ะ** (section 1–9 + สารบัญ sticky + scroll-spy ในไฟล์เดียว เปิดในเบราว์เซอร์ได้เลย) — **ห้าม improvise โครง/เนื้อหา ทุกอย่างมาจาก data.json**
    - ฟิลด์ `source` ต้อง = `"input/<project-slug>"` เพื่อกันการทำซ้ำ
 5.5 🤝 **ส่งดีลเข้า mission-control (ศูนย์กลางสายพาน) ผ่าน API — แทนการเขียน `handoff.json` local:**
